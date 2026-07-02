@@ -1,0 +1,129 @@
+position,name,seed,entry,nation,r1_result,r1_opponent,r1_score
+1,Jannik Sinner,1,,ITA,W,M. Kecmanovic,4-6 6-3 6-7(8) 6-2 6-3
+2,Miomir Kecmanovic,,,SRB,L,J. Sinner,4-6 6-3 6-7(8) 6-2 6-3
+3,Nuno Borges,,,POR,,T. Boyer,
+4,Tristan Boyer,,Q,USA,,N. Borges,
+5,Aleksandar Vukic,,,AUS,,J. Brooksby,
+6,Jenson Brooksby,,,USA,,A. Vukic,
+7,Emilio Nava,,,USA,,I. Buse,
+8,Ignacio Buse,31,,PER,,E. Nava,
+9,Rafael Jodar,23,,ESP,W,F. Gill,6-3 6-3 7-5
+10,Felix Gill,,WC,GBR,L,R. Jodar,6-3 6-3 7-5
+11,Denis Shapovalov,,,CAN,,P. Carreno Busta,
+12,Pablo Carreno Busta,,,ESP,,D. Shapovalov,
+13,Shintaro Mochizuki,,Q,JPN,W,M. Basing,6-3 6-0 6-0
+14,Max Basing,,Q,GBR,L,S. Mochizuki,6-3 6-0 6-0
+15,Ethan Quinn,,,USA,W,L. Darderi,7-6(7) 7-5 6-2
+16,Luciano Darderi,14,,ITA,L,E. Quinn,7-6(7) 7-5 6-2
+17,Casper Ruud,11,,NOR,L,H. Hurkacz,4-6 2-6 6-7(7)
+18,Hubert Hurkacz,,,POL,W,C. Ruud,4-6 2-6 6-7(7)
+19,Hamad Medjedovic,,,SRB,,S. Ofner,
+20,Sebastian Ofner,,,AUT,,H. Medjedovic,
+21,Seong-Chan Kwon,,Q,KOR,,M. Landaluce,
+22,Martin Landaluce,,,ESP,,S. Kwon,
+23,Alexandre Muller,,,FRA,,T. Paul,
+24,Tommy Paul,21,,USA,,A. Muller,
+25,Brandon Nakashima,28,,USA,W,J. Pinnington Jones,6-3 7-6(5) ...
+26,Jack Pinnington Jones,,WC,GBR,L,B. Nakashima,6-3 7-6(5) ...
+27,Jan-Lennard Struff,,,GER,,S. Baez,
+28,Sebastian Baez,,,ARG,,J. Struff,
+29,Camilo Ugo Carabelli,,,ARG,,D. Merida,
+30,Daniel Merida,,,ESP,,C. Ugo Carabelli,
+31,Marin Cilic,,,CRO,L,D. Medvedev,6-1 6-2 6-4
+32,Daniil Medvedev,8,,RUS,W,M. Cilic,6-1 6-2 6-4
+33,Felix Auger-Aliassime,3,,CAN,W,A. Shevchenko,6-3 6-1 6-4
+34,Alexander Shevchenko,,,KAZ,L,F. Auger-Aliassime,6-3 6-1 6-4
+35,Adam Walton,,,AUS,,D. Prizmic,
+36,Duje Prizmic,,,CRO,,A. Walton,
+37,Andres Vallejo,,,ECU,,N. Mejia,
+38,Nicolas Mejia,,Q,COL,,A. Vallejo,
+39,Michael Zheng,,Q,USA,W,C. Norrie,6-7(7) 6-2 6-7(2) 6-3 7-6(4)
+40,Cameron Norrie,26,,GBR,L,M. Zheng,6-7(7) 6-2 6-7(2) 6-3 7-6(4)
+41,Alejandro Davidovich Fokina,22,,ESP,,J. Cerundolo,
+42,Juan Manuel Cerundolo,,,ARG,,A. Davidovich Fokina,
+43,Thiago Tirante,,,ARG,,F. Marozsan,
+44,Fabian Marozsan,,,HUN,,T. Tirante,
+45,Luca Van Assche,,,FRA,,M. Fucsovics,
+46,Marton Fucsovics,,,HUN,,L. Van Assche,
+47,Dalibor Svrcina,,,CZE,,L. Tien,
+48,Learner Tien,16,,USA,,D. Svrcina,
+49,Andrey Rublev,12,,RUS,L,R. Safiullin,4-6 7-6(6) 3-6 6-3 6-7(12)
+50,Roman Safiullin,,Q,RUS,W,A. Rublev,4-6 7-6(6) 3-6 6-3 6-7(12)
+51,Alex Kovacevic,,,USA,,B. van de Zandschulp,
+52,Botic van de Zandschulp,,,NED,,A. Kovacevic,
+53,Jesper de Jong,,,NED,,R. Hijikata,
+54,Rinky Hijikata,,,AUS,,J. de Jong,
+55,Roberto Bautista Agut,,,ESP,,J. Fonseca,
+56,Joao Fonseca,24,,BRA,,R. Bautista Agut,
+57,Arthur Rinderknech,25,,FRA,W,O. Tarvet,7-6(4) 7-6(4) 4-6 7-5
+58,Oliver Tarvet,,Q,GBR,L,A. Rinderknech,7-6(4) 7-6(4) 4-6 7-5
+59,Matteo Trungelliti,,,ARG,,M. Damm,
+60,Martin Damm,,,CZE,,M. Trungelliti,
+61,Hugo Gaston,,Q,FRA,,S. Tsitsipas,
+62,Stefanos Tsitsipas,,,GRE,,H. Gaston,
+63,Yibing Wu,,,CHN,L,N. Djokovic,6-4 5-7 6-4 6-4
+64,Novak Djokovic,7,,SRB,W,Y. Wu,6-4 5-7 6-4 6-4
+65,Alex de Minaur,5,,AUS,W,R. Burruchaga,7-6(5) 6-1 6-0
+66,Roman Andres Burruchaga,,,ARG,L,A. de Minaur,7-6(5) 6-1 6-0
+67,Adrian Mannarino,,,FRA,,T. Droguet,
+68,Tom Droguet,,,FRA,,A. Mannarino,
+69,Mattia Bellucci,,,ITA,,Z. Svajda,
+70,Zachary Svajda,,,USA,,M. Bellucci,
+71,Kamil Majchrzak,,,POL,,A. Tabilo,
+72,Alejandro Tabilo,30,,CHI,,K. Majchrzak,
+73,Karen Khachanov,19,,RUS,W,B. Harris,6-3 7-5 6-3 6-3
+74,Billy Harris,,Q,GBR,L,K. Khachanov,6-3 7-5 6-3 6-3
+75,Yannick Hanfmann,,,GER,,G. Mpetshi Perricard,
+76,Giovanni Mpetshi Perricard,,,FRA,,Y. Hanfmann,
+77,Tallon Griekspoor,,,NED,,J. Duckworth,
+78,James Duckworth,,,AUS,,T. Griekspoor,
+79,Mariano Navone,,,ARG,,F. Cobolli,
+80,Flavio Cobolli,9,,ITA,,M. Navone,
+81,Jakub Mensik,15,,CZE,W,T. Samuel,7-5 3-6 3-6 6-3 7-6(7)
+82,Toby Samuel,,WC,GBR,L,J. Mensik,7-5 3-6 3-6 6-3 7-6(7)
+83,Daniel Sweeny,,Q,AUS,,G. Dimitrov,
+84,Grigor Dimitrov,,WC,BUL,,D. Sweeny,
+85,Stan Wawrinka,,WC,SUI,L,M. Berrettini,6-7(7) 7-6(16) 7-6(7) 7-6(5)
+86,Matteo Berrettini,,,ITA,W,S. Wawrinka,6-7(7) 7-6(16) 7-6(7) 7-6(5)
+87,Remy Collignon,,,BEL,,A. Fils,
+88,Arthur Fils,20,,FRA,,R. Collignon,
+89,Ugo Humbert,27,,FRA,L,Z. Bergs,2-6 5-7 6-4 6-3 3-6
+90,Zizou Bergs,,,BEL,W,U. Humbert,2-6 5-7 6-4 6-3 3-6
+91,Shintaro Shimabukuro,,,JPN,,J. Faria,
+92,Joao Faria,,Q,POR,,S. Shimabukuro,
+93,Damir Dzumhur,,,BIH,L,A. Fery,3-6 2-6 2-6
+94,Arthur Fery,,WC,GBR,W,D. Dzumhur,3-6 6-2 6-2 6-1
+95,Otto Virtanen,,Q,FIN,W,B. Shelton,6-4 3-6 6-7(8) 6-2 7-6(9)
+96,Ben Shelton,4,,USA,L,O. Virtanen,6-4 3-6 6-7(8) 6-2 7-6(9)
+97,Taylor Fritz,6,,USA,W,J. Draper,6-3 6-4 6-3
+98,Jack Draper,,WC,GBR,L,T. Fritz,6-3 6-4 6-3
+99,Patrick Kypson,,,USA,,M. McDonald,
+100,Mackenzie McDonald,,Q,USA,,P. Kypson,
+101,Benjamin Bonzi,,,FRA,,G. Diallo,
+102,Guido Diallo,,,ARG,,B. Bonzi,
+103,Lorenzo Sonego,,,ITA,,T. Etcheverry,
+104,Tomas Martin Etcheverry,29,,ARG,,L. Sonego,
+105,Frances Tiafoe,17,,USA,,T. Atmane,
+106,Terence Atmane,,,FRA,,F. Tiafoe,
+107,Vit Kopriva,,,CZE,L,J. Choinski,6-3 7-5 6-2
+108,Jan Choinski,,WC,GBR,W,V. Kopriva,6-3 7-5 6-2
+109,Kevin Jacquet,,Q,FRA,,V. Gaubas,
+110,Vilius Gaubas,,Q,LTU,,K. Jacquet,
+111,Thanasi Kokkinakis,,,AUS,,A. Bublik,
+112,Alexander Bublik,10,,KAZ,,T. Kokkinakis,
+113,Jiri Lehecka,13,,CZE,,A. Popyrin,
+114,Alexei Popyrin,,,AUS,,J. Lehecka,
+115,Adam Molcan,,,SVK,,D. Altmaier,
+116,Daniel Altmaier,,,GER,,A. Molcan,
+117,Alex Michelsen,,,USA,L,J. Fearnley,3-6 4-6 2-6
+118,Jacob Fearnley,,WC,GBR,W,A. Michelsen,3-6 4-6 6-2 6-3 6-2
+119,Juan Pablo Munar,,,ESP,,F. Cerundolo,
+120,Francisco Cerundolo,18,,ARG,,J. Munar,
+121,Matteo Arnaldi,32,,ITA,,Q. Halys,
+122,Quentin Halys,,,FRA,,M. Arnaldi,
+123,Corentin Moutet,,,FRA,,M. Giron,
+124,Marcos Giron,,,USA,,C. Moutet,
+125,Valentin Royer,,,FRA,W,H. Wendelken,4-6 6-3 6-3 6-3
+126,Harry Wendelken,,WC,GBR,L,V. Royer,4-6 6-3 6-3 6-3
+127,Alexander Blockx,,,BEL,L,A. Zverev,4-6 7-6(8) 6-7(5) 6-7(0)
+128,Alexander Zverev,2,,GER,W,A. Blockx,6-4 6-7(8) 7-6(5) 7-6(0)
