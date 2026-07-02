@@ -18,10 +18,15 @@ from src.config import (
     ROUND_DEPTH,
     ROLLING_WINDOW,
     ROLLING_WINDOW_GRASS,
-    WIMBLEDON_2026_START_DATE,
 )
 from src.features.elo import EloRecord, compute_elo_ratings
 from src.models.elo_model import WeightedEloPredictor
+
+CALIBRATED_MODEL_NAME = "XGBoost calibrated"
+CALIBRATED_MODEL_WEIGHT = 0.35
+CALIBRATED_TEMPERATURE = 2.75
+CALIBRATED_MIN_PROBA = 0.10
+CALIBRATED_MAX_PROBA = 0.90
 
 _ROLLING_STATS = [
     "serve_pct",
@@ -114,6 +119,12 @@ def _mean_recent(values: pd.Series, window: int, min_periods: int) -> float:
     return values.tail(window).mean()
 
 
+def _safe_delta(value_a: float, value_b: float) -> float:
+    if pd.isna(value_a) or pd.isna(value_b):
+        return np.nan
+    return float(value_a - value_b)
+
+
 class MatchPredictor:
     """Builds pre-match features and scores player pairs with a trained model."""
 
@@ -127,7 +138,10 @@ class MatchPredictor:
             ["tourney_date", "tourney_id", "match_num"],
             kind="stable",
         ).reset_index(drop=True)
-        self.reference_date = pd.Timestamp(reference_date or WIMBLEDON_2026_START_DATE)
+        if reference_date is None:
+            self.reference_date = self.matches["tourney_date"].max() + pd.Timedelta(days=1)
+        else:
+            self.reference_date = pd.Timestamp(reference_date)
 
         history = self.matches[self.matches["tourney_date"] < self.reference_date].copy()
         self.history = history.reset_index(drop=True)
@@ -144,9 +158,16 @@ class MatchPredictor:
             return WeightedEloPredictor()
         if model_name == "Logistic Regression":
             return joblib.load(MODELS_DIR / "logistic_pipeline.pkl")
-        if model_name == "XGBoost":
+        if model_name in {"XGBoost", CALIBRATED_MODEL_NAME}:
             return joblib.load(MODELS_DIR / "xgb_pipeline.pkl")
         raise ValueError(f"Unsupported model: {model_name}")
+
+    @staticmethod
+    def _temper_probability(probability: float) -> float:
+        clipped = float(np.clip(probability, 1e-6, 1 - 1e-6))
+        logit = np.log(clipped / (1 - clipped))
+        tempered = 1.0 / (1.0 + np.exp(-logit / CALIBRATED_TEMPERATURE))
+        return float(tempered)
 
     def _build_player_states(self) -> dict[str, PlayerState]:
         states: dict[str, PlayerState] = {}
@@ -291,11 +312,13 @@ class MatchPredictor:
         }
 
         for stat in _ROLLING_STATS:
-            row[f"roll_{stat}_delta"] = (
-                state_a.rolling_stats[stat] - state_b.rolling_stats[stat]
+            row[f"roll_{stat}_delta"] = _safe_delta(
+                state_a.rolling_stats[stat],
+                state_b.rolling_stats[stat],
             )
-            row[f"grass_roll_{stat}_delta"] = (
-                state_a.grass_rolling_stats[stat] - state_b.grass_rolling_stats[stat]
+            row[f"grass_roll_{stat}_delta"] = _safe_delta(
+                state_a.grass_rolling_stats[stat],
+                state_b.grass_rolling_stats[stat],
             )
 
         row.update(self._h2h_features(player_a_id, player_b_id))
@@ -308,4 +331,15 @@ class MatchPredictor:
         feature_row = self.build_feature_row(player_a_id, player_b_id).fillna(0)
         if self.model_name == "Weighted Elo":
             return float(self.model.predict_proba(feature_row)[0, 1])
-        return float(self.model.predict_proba(feature_row)[0, 1])
+
+        model_probability = float(self.model.predict_proba(feature_row)[0, 1])
+        if self.model_name != CALIBRATED_MODEL_NAME:
+            return model_probability
+
+        elo_probability = float(WeightedEloPredictor().predict_proba(feature_row)[0, 1])
+        tempered_model_probability = self._temper_probability(model_probability)
+        blended = (
+            CALIBRATED_MODEL_WEIGHT * tempered_model_probability
+            + (1 - CALIBRATED_MODEL_WEIGHT) * elo_probability
+        )
+        return float(np.clip(blended, CALIBRATED_MIN_PROBA, CALIBRATED_MAX_PROBA))

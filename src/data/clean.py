@@ -62,7 +62,7 @@ def clean_matches(matches: pd.DataFrame) -> pd.DataFrame:
 
     # Deduplicate
     df = df.drop_duplicates(
-        subset=["tourney_id", "match_num"], keep="first"
+        subset=["tourney_id", "match_num"], keep="last"
     ).reset_index(drop=True)
 
     # Cast stat columns to numeric

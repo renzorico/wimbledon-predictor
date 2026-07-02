@@ -58,6 +58,18 @@ python -m src.models.compare
 streamlit run src/app/Home.py
 ```
 
+## Daily Wimbledon update
+
+Run this before play starts each day to refresh live data and preserve a dated
+prediction snapshot for later accuracy scoring:
+
+```bash
+python3 scripts/daily_update.py --date YYYY-MM-DD
+```
+
+Use `--skip-train` for a fast data/snapshot refresh without retuning models.
+Snapshots are written to `data/predictions/YYYY-MM-DD/`.
+
 ## Dashboard pages
 
 | Page | Description |

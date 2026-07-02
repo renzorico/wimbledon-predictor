@@ -11,11 +11,25 @@ from src.config import MATCH_YEARS, RAW_DIR
 TML_REPO_URL = "https://github.com/Tennismylife/TML-Database.git"
 TML_CLONE_DIR = Path("/tmp/TML-Database")
 TML_STATS_BASE_URL = "https://stats.tennismylife.org/data"
+ONGOING_TOURNEYS_FILE = "ongoing_tourneys.csv"
 
 
 def _download_year_from_tml_stats(year: int, dst_file: Path) -> bool:
     """Download a yearly ATP CSV from the live TennisMyLife site."""
     url = f"{TML_STATS_BASE_URL}/{year}.csv"
+    try:
+        response = requests.get(url, timeout=60)
+    except requests.RequestException:
+        return False
+    if response.status_code != 200:
+        return False
+    dst_file.write_bytes(response.content)
+    return True
+
+
+def _download_file_from_tml_stats(filename: str, dst_file: Path) -> bool:
+    """Download a named CSV from the live TennisMyLife data directory."""
+    url = f"{TML_STATS_BASE_URL}/{filename}"
     try:
         response = requests.get(url, timeout=60)
     except requests.RequestException:
@@ -48,6 +62,9 @@ def download_atp_data(
             downloaded_live.add(year)
 
     if copied == len(list(years)):
+        ongoing_path = dest / ONGOING_TOURNEYS_FILE
+        if _download_file_from_tml_stats(ONGOING_TOURNEYS_FILE, ongoing_path):
+            print(f"refreshed {ONGOING_TOURNEYS_FILE}")
         print(f"done: {copied} refreshed from TennisMyLife ({len(list(years))} total)")
         return
 

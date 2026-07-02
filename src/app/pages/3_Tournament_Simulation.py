@@ -10,10 +10,10 @@ import streamlit as st
 ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src.config import MONTE_CARLO_SIMS, PROCESSED_DIR, WIMBLEDON_2026_START_DATE
+from src.config import MONTE_CARLO_SIMS, PROCESSED_DIR
 from src.simulation.draw_loader import get_bracket_summary, load_wimbledon_2026_draw
 from src.simulation.monte_carlo import simulate_tournament
-from src.simulation.predictor import MatchPredictor
+from src.simulation.predictor import CALIBRATED_MODEL_NAME, MatchPredictor
 
 st.set_page_config(page_title="Tournament Simulation", layout="wide")
 st.title("Monte Carlo tournament simulation")
@@ -31,7 +31,6 @@ def load_predictor(model_name: str) -> MatchPredictor:
     return MatchPredictor(
         matches=matches,
         model_name=model_name,
-        reference_date=WIMBLEDON_2026_START_DATE,
     )
 
 
@@ -73,13 +72,13 @@ col1, col2, col3 = st.columns([1.2, 1, 1])
 with col1:
     model_name = st.selectbox(
         "Model",
-        ["XGBoost", "Logistic Regression", "Weighted Elo"],
+        [CALIBRATED_MODEL_NAME, "XGBoost", "Logistic Regression", "Weighted Elo"],
         index=0,
     )
 with col2:
     n_sims = st.slider("Simulations", 1000, 20000, MONTE_CARLO_SIMS, step=1000)
 with col3:
-    st.metric("Locked R1 results", f"{summary['r1_complete']}/64")
+    st.metric("Locked results", summary["locked_total"])
 
 with st.spinner(f"Running {n_sims:,} full-draw simulations with {model_name}..."):
     sim = run_simulation(model_name, n_sims)
@@ -126,7 +125,9 @@ with right:
     st.metric("Draw size", f"{len(player_lookup)} players")
     st.metric("R1 complete", summary["r1_pct"])
     st.metric("Model", model_name)
-    st.metric("Reference date", WIMBLEDON_2026_START_DATE)
+    st.metric("Reference date", str(load_predictor(model_name).reference_date.date()))
+    if model_name == CALIBRATED_MODEL_NAME:
+        st.caption("Raw XGBoost probabilities are tempered, blended with WElo, and capped per match.")
 
 st.subheader("Advancement probabilities")
 st.dataframe(

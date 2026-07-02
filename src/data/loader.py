@@ -25,6 +25,11 @@ def load_matches(
 
     matches = pd.concat(frames, ignore_index=True)
 
+    ongoing_path = RAW_DIR / "ongoing_tourneys.csv"
+    if ongoing_path.exists():
+        ongoing = pd.read_csv(ongoing_path, low_memory=False)
+        matches = pd.concat([matches, ongoing], ignore_index=True)
+
     # Parse date and establish a stable within-day order for downstream
     # chronological feature builders.
     matches["tourney_date"] = pd.to_datetime(
