@@ -1,0 +1,18 @@
+snapshot_date,match_id,round,player_a,player_b,p_player_a,p_player_b,predicted_winner,confidence,model,actual_winner,resolved,correct
+2026-07-03,R2_M28,R2,Kevin Jacquet,Alexander Bublik,0.2893730071305667,0.7106269928694333,Alexander Bublik,0.7106269928694333,XGBoost calibrated,,False,False
+2026-07-03,R2_M21,R2,Jakub Mensik,Grigor Dimitrov,0.6000365112145305,0.3999634887854695,Jakub Mensik,0.6000365112145305,XGBoost calibrated,,False,False
+2026-07-03,R2_M27,R2,Frances Tiafoe,Jan Choinski,0.8152286592873512,0.1847713407126487,Frances Tiafoe,0.8152286592873512,XGBoost calibrated,,False,False
+2026-07-03,R3_M1,R3,Jannik Sinner,Jenson Brooksby,0.9,0.0999999999999999,Jannik Sinner,0.9,XGBoost calibrated,,False,False
+2026-07-03,R3_M3,R3,Hubert Hurkacz,Tommy Paul,0.5067300248517884,0.4932699751482116,Hubert Hurkacz,0.5067300248517884,XGBoost calibrated,,False,False
+2026-07-03,R3_M6,R3,Alejandro Davidovich Fokina,Marton Fucsovics,0.7295662137784888,0.2704337862215111,Alejandro Davidovich Fokina,0.7295662137784888,XGBoost calibrated,,False,False
+2026-07-03,R3_M4,R3,Jan-Lennard Struff,Daniil Medvedev,0.4001122834879745,0.5998877165120254,Daniil Medvedev,0.5998877165120254,XGBoost calibrated,,False,False
+2026-07-03,R3_M7,R3,Roman Safiullin,Joao Fonseca,0.3633357448218588,0.6366642551781412,Joao Fonseca,0.6366642551781412,XGBoost calibrated,,False,False
+2026-07-03,R3_M8,R3,Arthur Rinderknech,Novak Djokovic,0.1903314636338289,0.8096685363661711,Novak Djokovic,0.8096685363661711,XGBoost calibrated,,False,False
+2026-07-03,R3_M5,R3,Felix Auger-Aliassime,Michael Zheng,0.6681389055739466,0.3318610944260534,Felix Auger-Aliassime,0.6681389055739466,XGBoost calibrated,,False,False
+2026-07-03,R3_M2,R3,Rafael Jodar,Shintaro Mochizuki,0.7595614363662715,0.2404385636337285,Rafael Jodar,0.7595614363662715,XGBoost calibrated,,False,False
+2026-07-03,R3_M9,R3,Alex de Minaur,Zachary Svajda,0.7680822168298258,0.2319177831701742,Alex de Minaur,0.7680822168298258,XGBoost calibrated,,False,False
+2026-07-03,R3_M13,R3,Taylor Fritz,Lorenzo Sonego,0.7733287068061185,0.2266712931938814,Taylor Fritz,0.7733287068061185,XGBoost calibrated,,False,False
+2026-07-03,R3_M12,R3,Zizou Bergs,Arthur Fery,0.5583062337717057,0.4416937662282942,Zizou Bergs,0.5583062337717057,XGBoost calibrated,,False,False
+2026-07-03,R3_M16,R3,Marcos Giron,Alexander Zverev,0.4240912922360736,0.5759087077639263,Alexander Zverev,0.5759087077639263,XGBoost calibrated,,False,False
+2026-07-03,R3_M10,R3,Karen Khachanov,Flavio Cobolli,0.569345413211939,0.430654586788061,Karen Khachanov,0.569345413211939,XGBoost calibrated,,False,False
+2026-07-03,R3_M15,R3,Jiri Lehecka,Juan Pablo Munar,0.7534202938325708,0.2465797061674292,Jiri Lehecka,0.7534202938325708,XGBoost calibrated,,False,False

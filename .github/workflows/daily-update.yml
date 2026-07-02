@@ -1,0 +1,60 @@
+name: Daily Wimbledon update
+
+on:
+  schedule:
+    # 00:30 London / 01:30 Madrid during Wimbledon summer time.
+    - cron: "30 23 * * *"
+  workflow_dispatch:
+    inputs:
+      skip_train:
+        description: "Skip model retraining and only refresh data/snapshots"
+        required: false
+        default: "false"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-wimbledon-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run daily update
+        run: |
+          if [ "${{ github.event.inputs.skip_train }}" = "true" ]; then
+            python3 scripts/daily_update.py --date "$(date -u +%F)" --skip-train
+          else
+            python3 scripts/daily_update.py --date "$(date -u +%F)"
+          fi
+
+      - name: Run tests
+        run: python3 -m unittest discover -s tests -p 'test_*.py'
+
+      - name: Commit updated data and predictions
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md data/processed models data/predictions scripts src tests .github/workflows/daily-update.yml
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Daily Wimbledon update $(date -u +%F)"
+            git push
+          fi

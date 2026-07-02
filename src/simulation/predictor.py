@@ -122,6 +122,8 @@ def _mean_recent(values: pd.Series, window: int, min_periods: int) -> float:
 def _safe_delta(value_a: float, value_b: float) -> float:
     if pd.isna(value_a) or pd.isna(value_b):
         return np.nan
+    if not np.isfinite(value_a) or not np.isfinite(value_b):
+        return np.nan
     return float(value_a - value_b)
 
 

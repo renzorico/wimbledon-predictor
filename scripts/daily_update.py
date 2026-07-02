@@ -15,7 +15,7 @@ from src.data.loader import load_matches
 from src.features.builder import build_feature_matrix, save_feature_matrix
 from src.models.compare import run_comparison
 from src.simulation.predictor import CALIBRATED_MODEL_NAME
-from src.simulation.snapshot import write_prediction_snapshot
+from src.simulation.snapshot import evaluate_all_prediction_snapshots, write_prediction_snapshot
 
 
 def main() -> None:
@@ -45,6 +45,9 @@ def main() -> None:
         print("retraining models...")
         run_comparison(features)
 
+    print("evaluating saved prediction snapshots...")
+    evaluate_all_prediction_snapshots()
+
     print("writing prediction snapshot...")
     out_dir = write_prediction_snapshot(
         snapshot_date=args.date,
@@ -52,6 +55,9 @@ def main() -> None:
         n_sims=args.sims,
     )
     print(f"saved prediction snapshot to {out_dir}")
+
+    print("evaluating current prediction snapshot...")
+    evaluate_all_prediction_snapshots()
 
 
 if __name__ == "__main__":
