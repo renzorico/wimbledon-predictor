@@ -12,10 +12,7 @@ dist/
 
 # Data & model artifacts
 data/raw/
-data/processed/
-models/*.pkl
-models/*.json
-*.parquet
+# processed data and model artifacts are committed for Streamlit Cloud deployment
 
 # Python
 .venv/
