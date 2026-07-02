@@ -1,37 +1,93 @@
 # Wimbledon 2026 Men's Singles Predictor
 
-**Last Updated:** 2026-07-02
+A statistical match prediction model for the 2026 Wimbledon Championships, built with Python, scikit-learn, XGBoost, and Streamlit. Trained on 74,848 ATP matches (2000-2026) with 41 engineered features.
 
-**Current Round:** R1 (Day 3 — in progress)
+## Results
 
-A personal prediction tracker for the 2026 Wimbledon men's singles draw. Make predictions before each round, log results as they happen, and track scoring accuracy throughout the tournament.
+| Model | Accuracy | Log Loss | ROC AUC |
+|-------|----------|----------|---------|
+| Weighted Elo (baseline) | 63.4% | 0.630 | 0.695 |
+| Logistic Regression | 80.1% | 0.422 | 0.888 |
+| **XGBoost (tuned)** | **89.7%** | **0.242** | **0.964** |
 
-## How it works
+Cross-validated with `TimeSeriesSplit` to prevent temporal data leakage.
 
-1. Before each round, fill in your picks in [predictions.md](predictions.md).
-2. After matches complete, record results in [results.md](results.md).
-3. Update the draw bracket in [draw.md](draw.md) as players advance.
-4. Score your predictions using the rules in [scoring.md](scoring.md).
-5. Log daily notes and upsets in [daily-log.md](daily-log.md).
+## Features
 
-## Files
+- **Surface-weighted Elo** (40% grass + 35% overall + 25% hard court)
+- **Rolling serve/return stats** (last 10 matches + last 5 grass matches)
+- **Head-to-head records** (all-time + grass-specific + recent 3 meetings)
+- **Momentum** (win streaks, titles, form, rest days)
+- **Monte Carlo simulation** (10K bracket simulations for title probabilities)
 
-| File | Purpose |
-|------|---------|
-| [draw.md](draw.md) | Full 128-player draw, updated as rounds complete |
-| [predictions.md](predictions.md) | Your picks per round with confidence ratings |
-| [results.md](results.md) | Actual match results with scores |
-| [scoring.md](scoring.md) | Scoring system and running totals |
-| [daily-log.md](daily-log.md) | Day-by-day log of matches and upsets |
+## Architecture
 
-## Tournament schedule
+```
+src/
+├── data/           # ETL pipeline (download, load, clean)
+├── features/       # Elo, rolling stats, H2H, momentum
+├── models/         # WElo, LogisticRegression, XGBoost
+├── simulation/     # Bracket structure + Monte Carlo engine
+└── app/            # Streamlit dashboard (5 pages)
+```
 
-| Round | Day(s) | Matches |
-|-------|--------|---------|
-| R1 | Days 1–3 | 64 matches |
-| R2 | Days 4–5 | 32 matches |
-| R3 | Days 6–7 | 16 matches |
-| R4 | Day 8 | 8 matches |
-| QF | Days 9–10 | 4 matches |
-| SF | Day 12 | 2 matches |
-| F | Day 14 | 1 match |
+## Setup
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Run the pipeline
+
+```bash
+# 1. Download ATP match data
+python -m src.data.download
+
+# 2. Clean and preprocess
+python -m src.data.clean
+
+# 3. Build feature matrix (41 features × 74K matches)
+python -m src.features.builder
+
+# 4. Train and compare models
+python -m src.models.compare
+
+# 5. Launch dashboard
+streamlit run src/app/Home.py
+```
+
+## Dashboard pages
+
+| Page | Description |
+|------|-------------|
+| Home | Tournament status, model comparison, upsets |
+| Model Comparison | Metrics, calibration curves, feature importance (SHAP) |
+| Player Profiles | Radar charts, surface splits, rolling form |
+| Tournament Simulation | Monte Carlo title probabilities, quarter analysis |
+| Live Bracket | Seed tracker with R1 results |
+| Methodology | Full technical write-up |
+
+## Required environment variables
+
+None. All data is fetched from public sources (TML-Database).
+
+## Data source
+
+[TML-Database](https://github.com/Tennismylife/TML-Database) — Sackmann-compatible ATP match database, live-updated through 2026.
+
+## Key design decisions
+
+- **Delta features**: all 41 features computed as Player A - Player B
+- **TimeSeriesSplit**: no temporal leakage (train on past, predict future)
+- **Row flipping**: half of training rows inverted to teach model symmetry
+- **Surface-weighted Elo**: blends grass, overall, and hard court ratings
+
+## Tech stack
+
+Python, pandas, scikit-learn, XGBoost, Streamlit, Plotly, NumPy
+
+## License
+
+MIT

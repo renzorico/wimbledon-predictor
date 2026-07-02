@@ -9,3 +9,14 @@ __pycache__/
 node_modules/
 dist/
 .next/
+
+# Data & model artifacts
+data/raw/
+data/processed/
+models/*.pkl
+models/*.json
+*.parquet
+
+# Python
+.venv/
+*.egg-info/
