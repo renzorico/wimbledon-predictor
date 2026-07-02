@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wimbledon 2026 Predictor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'w-green':  '#00703C',
+            'w-purple': '#4B2D83',
+            'w-cream':  '#F5F0E8',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Courier New', monospace; }
+    .tab-btn.active { background-color: #00703C; color: white; }
+    .seed-row.eliminated { opacity: 0.45; }
+    .pick-btn { transition: all 0.15s; }
+    .pick-btn.selected { background-color: #00703C; color: white; border-color: #00703C; }
+    .pick-btn:hover:not(.selected) { border-color: #00703C; color: #00703C; }
+    @media (max-width: 640px) { .score-col { display: none; } }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-w-purple border-b border-purple-700 px-4 py-3">
+    <div class="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-2">
+      <div>
+        <h1 class="text-xl font-bold tracking-tight text-white">Wimbledon 2026</h1>
+        <p class="text-purple-300 text-xs">Men's Singles Predictor</p>
+      </div>
+      <div class="flex gap-3 text-xs">
+        <span class="bg-green-800 text-green-200 px-2 py-1 rounded" id="round-badge">R1 in progress</span>
+        <span class="text-purple-300" id="day-badge">Day 3 · 2026-07-02</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="bg-gray-900 border-b border-gray-800 px-4">
+    <div class="max-w-6xl mx-auto flex gap-1 pt-2">
+      <button class="tab-btn active px-4 py-2 text-sm rounded-t" onclick="showTab('draw')">Draw</button>
+      <button class="tab-btn px-4 py-2 text-sm rounded-t text-gray-400 hover:text-white" onclick="showTab('upsets')">Upsets</button>
+      <button class="tab-btn px-4 py-2 text-sm rounded-t text-gray-400 hover:text-white" onclick="showTab('predict')">Predict</button>
+      <button class="tab-btn px-4 py-2 text-sm rounded-t text-gray-400 hover:text-white" onclick="showTab('score')">Score</button>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-6">
+
+    <!-- DRAW TAB -->
+    <section id="tab-draw">
+      <p class="text-gray-500 text-xs mb-4">Seeds only. R1 opponent shown where known. W = won, L = eliminated.</p>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="draw-quarters"></div>
+    </section>
+
+    <!-- UPSETS TAB -->
+    <section id="tab-upsets" class="hidden">
+      <h2 class="text-lg font-bold text-w-green mb-4">Upsets — seeded players eliminated</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-gray-500 border-b border-gray-800">
+              <th class="pb-2 pr-4">Round</th>
+              <th class="pb-2 pr-4">Seed lost</th>
+              <th class="pb-2 pr-4">Loser</th>
+              <th class="pb-2 pr-4">Winner</th>
+              <th class="pb-2">Score</th>
+            </tr>
+          </thead>
+          <tbody id="upsets-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PREDICT TAB -->
+    <section id="tab-predict" class="hidden">
+      <p class="text-gray-500 text-xs mb-6">Pick one winner per quarter for QF, then SF and Final. Saved locally in your browser.</p>
+
+      <div class="space-y-8">
+        <!-- QF picks -->
+        <div>
+          <h2 class="text-w-green font-bold mb-3 text-sm uppercase tracking-wide">Quarter-Final winners (one per quarter)</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="qf-picks"></div>
+        </div>
+
+        <!-- SF picks -->
+        <div>
+          <h2 class="text-w-green font-bold mb-3 text-sm uppercase tracking-wide">Semi-Final winners</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="sf-picks"></div>
+        </div>
+
+        <!-- Final + Champion -->
+        <div>
+          <h2 class="text-w-green font-bold mb-3 text-sm uppercase tracking-wide">Champion</h2>
+          <div id="final-pick"></div>
+        </div>
+
+        <button onclick="savePredictions()" class="bg-w-green text-white px-6 py-2 rounded text-sm font-bold hover:bg-green-700">
+          Save predictions
+        </button>
+        <span id="save-msg" class="text-green-400 text-xs ml-3 hidden">Saved.</span>
+      </div>
+    </section>
+
+    <!-- SCORE TAB -->
+    <section id="tab-score" class="hidden">
+      <h2 class="text-lg font-bold text-w-green mb-1">Scoring system</h2>
+      <p class="text-gray-500 text-xs mb-4">Points awarded per correct prediction, scaled by round.</p>
+      <div class="overflow-x-auto mb-8">
+        <table class="text-sm w-full max-w-md">
+          <thead>
+            <tr class="text-left text-gray-500 border-b border-gray-800">
+              <th class="pb-2 pr-8">Round</th>
+              <th class="pb-2 pr-8">Points</th>
+              <th class="pb-2">Confidence multiplier</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-900"><td class="py-1 pr-8 text-gray-300">R1</td><td class="pr-8">1</td><td class="text-gray-500 text-xs">H×1.5 / M×1.0 / L×0.5</td></tr>
+            <tr class="border-b border-gray-900"><td class="py-1 pr-8 text-gray-300">R2</td><td class="pr-8">2</td><td class="text-gray-500 text-xs">applies to all rounds</td></tr>
+            <tr class="border-b border-gray-900"><td class="py-1 pr-8 text-gray-300">R3</td><td class="pr-8">4</td><td></td></tr>
+            <tr class="border-b border-gray-900"><td class="py-1 pr-8 text-gray-300">R4</td><td class="pr-8">8</td><td></td></tr>
+            <tr class="border-b border-gray-900"><td class="py-1 pr-8 text-gray-300">QF</td><td class="pr-8">16</td><td></td></tr>
+            <tr class="border-b border-gray-900"><td class="py-1 pr-8 text-gray-300">SF</td><td class="pr-8">32</td><td></td></tr>
+            <tr class="border-b border-gray-900"><td class="py-1 pr-8 text-gray-300">F</td><td class="pr-8">64</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="text-lg font-bold text-w-green mb-3">Your prediction score</h2>
+      <div id="score-board">
+        <p class="text-gray-500 text-sm">Score will calculate here as results come in and are entered in data.js.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="data.js"></script>
+  <script>
+    // ── helpers ──────────────────────────────────────────────────────────
+    const $ = id => document.getElementById(id);
+
+    function showTab(name) {
+      ['draw','upsets','predict','score'].forEach(t => {
+        $('tab-' + t).classList.toggle('hidden', t !== name);
+      });
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        const tabs = ['draw','upsets','predict','score'];
+        btn.classList.toggle('active', tabs[i] === name);
+        btn.classList.toggle('text-gray-400', tabs[i] !== name);
+        btn.classList.toggle('text-white', tabs[i] === name);
+      });
+    }
+
+    function resultBadge(result) {
+      if (result === 'W') return '<span class="text-xs bg-green-900 text-green-300 px-1.5 py-0.5 rounded">W</span>';
+      if (result === 'L') return '<span class="text-xs bg-red-900 text-red-300 px-1.5 py-0.5 rounded">L</span>';
+      return '<span class="text-xs text-gray-600">—</span>';
+    }
+
+    function nationFlag(nation) {
+      const flags = {
+        ITA:'🇮🇹', AUS:'🇦🇺', CZE:'🇨🇿', USA:'🇺🇸', FRA:'🇫🇷', ARG:'🇦🇷',
+        GER:'🇩🇪', SRB:'🇷🇸', NOR:'🇳🇴', RUS:'🇷🇺', POL:'🇵🇱', CAN:'🇨🇦',
+        KAZ:'🇰🇿', ESP:'🇪🇸', BRA:'🇧🇷', GBR:'🇬🇧', FIN:'🇫🇮', BEL:'🇧🇪',
+        CHI:'🇨🇱', PER:'🇵🇪', CRO:'🇭🇷', CHN:'🇨🇳', SRB:'🇷🇸',
+      };
+      return flags[nation] || nation;
+    }
+
+    function isEliminated(seed) {
+      return seed.r1?.result === 'L' ||
+             seed.r2?.result === 'L' ||
+             seed.r3?.result === 'L' ||
+             seed.r4?.result === 'L' ||
+             seed.qf?.result === 'L' ||
+             seed.sf?.result === 'L' ||
+             seed.f?.result === 'L';
+    }
+
+    // ── DRAW TAB ─────────────────────────────────────────────────────────
+    function renderDraw() {
+      const container = $('draw-quarters');
+      const quarters = ['Q1','Q2','Q3','Q4'];
+
+      quarters.forEach(q => {
+        const seeds = SEEDS.filter(s => s.quarter === q).sort((a,b) => a.seed - b.seed);
+        const div = document.createElement('div');
+        div.className = 'bg-gray-900 rounded-lg overflow-hidden';
+
+        div.innerHTML = `
+          <div class="px-4 py-3 bg-w-purple bg-opacity-40 border-b border-purple-900">
+            <h3 class="font-bold text-sm">${QUARTER_LABELS[q]}</h3>
+          </div>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-gray-600 text-xs border-b border-gray-800">
+                <th class="px-3 py-2">Seed</th>
+                <th class="px-3 py-2">Player</th>
+                <th class="px-3 py-2">R1</th>
+                <th class="px-3 py-2 score-col">Opp</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${seeds.map(s => `
+                <tr class="border-b border-gray-800 seed-row ${isEliminated(s) ? 'eliminated' : ''}" title="${s.r1?.score || ''}">
+                  <td class="px-3 py-2 text-gray-500 text-xs">${s.seed}</td>
+                  <td class="px-3 py-2">
+                    <span class="mr-1">${nationFlag(s.nation)}</span>
+                    <span class="${isEliminated(s) ? 'line-through text-gray-500' : ''}">${s.name}</span>
+                  </td>
+                  <td class="px-3 py-2">${resultBadge(s.r1?.result)}</td>
+                  <td class="px-3 py-2 text-gray-500 text-xs score-col">${s.r1?.opp || '—'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // ── UPSETS TAB ───────────────────────────────────────────────────────
+    function renderUpsets() {
+      const tbody = $('upsets-body');
+      if (UPSETS.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-gray-600 text-sm">No upsets yet.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = UPSETS.map(u => `
+        <tr class="border-b border-gray-800">
+          <td class="py-2 pr-4 text-gray-400 text-xs">${u.round}</td>
+          <td class="py-2 pr-4 text-red-400 font-bold text-xs">[${u.loserSeed}]</td>
+          <td class="py-2 pr-4">
+            <span class="line-through text-gray-500">${u.loser}</span>
+            <span class="text-gray-600 text-xs ml-1">${nationFlag(u.loseNation)}</span>
+          </td>
+          <td class="py-2 pr-4 text-green-400">
+            ${u.winner}
+            <span class="text-gray-600 text-xs ml-1">${nationFlag(u.winNation)}</span>
+          </td>
+          <td class="py-2 text-gray-500 text-xs">${u.score}</td>
+        </tr>
+      `).join('');
+    }
+
+    // ── PREDICT TAB ──────────────────────────────────────────────────────
+    let picks = JSON.parse(localStorage.getItem('w2026_picks') || '{}');
+
+    function seedButton(seed, pickKey) {
+      const isSelected = picks[pickKey] === seed.seed;
+      const isOut = isEliminated(seed);
+      return `
+        <button
+          class="pick-btn w-full text-left px-3 py-2 rounded border text-sm
+            ${isOut ? 'border-gray-800 text-gray-700 cursor-not-allowed' : 'border-gray-700 text-gray-300'}
+            ${isSelected ? 'selected' : ''}"
+          onclick="pick('${pickKey}', ${seed.seed})"
+          ${isOut ? 'disabled title="Eliminated"' : ''}
+        >
+          <span class="text-xs text-gray-500 mr-2">[${seed.seed}]</span>
+          ${nationFlag(seed.nation)} ${seed.name}
+          ${isOut ? ' <span class="text-xs text-red-700">out</span>' : ''}
+          ${isSelected ? ' <span class="text-xs text-green-300">✓</span>' : ''}
+        </button>`;
+    }
+
+    function renderPredictions() {
+      const quarters = ['Q1','Q2','Q3','Q4'];
+
+      // QF: pick one per quarter
+      const qfDiv = $('qf-picks');
+      qfDiv.innerHTML = quarters.map(q => {
+        const seeds = SEEDS.filter(s => s.quarter === q).sort((a,b) => a.seed - b.seed);
+        return `
+          <div class="bg-gray-900 rounded-lg p-3">
+            <p class="text-xs text-gray-500 mb-2 font-bold">${QUARTER_LABELS[q]}</p>
+            <div class="space-y-1">
+              ${seeds.map(s => seedButton(s, 'qf_' + q)).join('')}
+            </div>
+          </div>`;
+      }).join('');
+
+      // SF: pick from top/bottom half
+      const sfDiv = $('sf-picks');
+      const topHalfSeeds = SEEDS.filter(s => s.quarter === 'Q1' || s.quarter === 'Q2').sort((a,b) => a.seed - b.seed);
+      const bottomHalfSeeds = SEEDS.filter(s => s.quarter === 'Q3' || s.quarter === 'Q4').sort((a,b) => a.seed - b.seed);
+
+      sfDiv.innerHTML = `
+        <div class="bg-gray-900 rounded-lg p-3">
+          <p class="text-xs text-gray-500 mb-2 font-bold">Top half SF winner (Q1 + Q2)</p>
+          <div class="space-y-1">${topHalfSeeds.map(s => seedButton(s, 'sf_top')).join('')}</div>
+        </div>
+        <div class="bg-gray-900 rounded-lg p-3">
+          <p class="text-xs text-gray-500 mb-2 font-bold">Bottom half SF winner (Q3 + Q4)</p>
+          <div class="space-y-1">${bottomHalfSeeds.map(s => seedButton(s, 'sf_bottom')).join('')}</div>
+        </div>`;
+
+      // Final: pick champion from all seeds
+      const finalDiv = $('final-pick');
+      finalDiv.innerHTML = `
+        <div class="bg-gray-900 rounded-lg p-3">
+          <p class="text-xs text-gray-500 mb-2 font-bold">Champion (pick from all active seeds)</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1">
+            ${SEEDS.sort((a,b) => a.seed - b.seed).map(s => seedButton(s, 'champion')).join('')}
+          </div>
+        </div>`;
+    }
+
+    function pick(key, seedNum) {
+      picks[key] = seedNum;
+      renderPredictions();
+    }
+
+    function savePredictions() {
+      localStorage.setItem('w2026_picks', JSON.stringify(picks));
+      $('save-msg').classList.remove('hidden');
+      setTimeout(() => $('save-msg').classList.add('hidden'), 2000);
+    }
+
+    // ── SCORE TAB ────────────────────────────────────────────────────────
+    function renderScore() {
+      const board = $('score-board');
+      const roundKeys = ['qf_Q1','qf_Q2','qf_Q3','qf_Q4','sf_top','sf_bottom','champion'];
+      const roundLabels = ['QF Q1','QF Q2','QF Q3','QF Q4','SF top','SF bottom','Champion'];
+      const roundPoints = { qf_Q1: 16, qf_Q2: 16, qf_Q3: 16, qf_Q4: 16, sf_top: 32, sf_bottom: 32, champion: 64 };
+
+      let totalPossible = 0;
+      let totalEarned = 0;
+
+      const rows = roundKeys.map((key, i) => {
+        const pickedSeed = picks[key];
+        const seedObj = pickedSeed ? SEEDS.find(s => s.seed === pickedSeed) : null;
+        const pts = roundPoints[key];
+        totalPossible += pts;
+
+        let status = '—';
+        let earned = 0;
+
+        if (seedObj) {
+          // Determine if this pick is correct yet based on current results
+          // This is a placeholder — actual scoring requires knowing round results
+          status = `picked: ${seedObj.name}`;
+        }
+
+        return `
+          <tr class="border-b border-gray-800">
+            <td class="py-2 pr-4 text-gray-400 text-xs">${roundLabels[i]}</td>
+            <td class="py-2 pr-4 text-xs">${seedObj ? `[${seedObj.seed}] ${seedObj.name}` : '<span class="text-gray-600">no pick</span>'}</td>
+            <td class="py-2 pr-4 text-xs text-gray-500">${pts} pts</td>
+            <td class="py-2 text-xs text-gray-600">pending</td>
+          </tr>`;
+      }).join('');
+
+      board.innerHTML = `
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm max-w-xl">
+            <thead>
+              <tr class="text-left text-gray-600 text-xs border-b border-gray-800">
+                <th class="pb-2 pr-4">Stage</th>
+                <th class="pb-2 pr-4">Your pick</th>
+                <th class="pb-2 pr-4">Max pts</th>
+                <th class="pb-2">Result</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+        <p class="text-gray-600 text-xs mt-4">Score updates automatically as results are added to data.js.</p>`;
+    }
+
+    // ── INIT ─────────────────────────────────────────────────────────────
+    renderDraw();
+    renderUpsets();
+    renderPredictions();
+    renderScore();
+  </script>
+</body>
+</html>
