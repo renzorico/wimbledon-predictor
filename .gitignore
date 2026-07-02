@@ -1,0 +1,11 @@
+.env
+.env.*
+.env.local
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+*.pyo
+node_modules/
+dist/
+.next/
