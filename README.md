@@ -6,9 +6,9 @@ A statistical match prediction model for the 2026 Wimbledon Championships, built
 
 | Model | Accuracy | Log Loss | ROC AUC |
 |-------|----------|----------|---------|
-| Weighted Elo (baseline) | 63.4% | 0.630 | 0.695 |
-| Logistic Regression | 80.1% | 0.422 | 0.888 |
-| **XGBoost (tuned)** | **89.7%** | **0.242** | **0.964** |
+| Weighted Elo (baseline) | 63.3% | 0.631 | 0.694 |
+| Logistic Regression | 69.1% | 0.596 | 0.760 |
+| **XGBoost (tuned)** | **80.6%** | **0.402** | **0.896** |
 
 Cross-validated with `TimeSeriesSplit` to prevent temporal data leakage.
 
@@ -81,6 +81,7 @@ None. All data is fetched from public sources (TML-Database).
 
 - **Delta features**: all 41 features computed as Player A - Player B
 - **TimeSeriesSplit**: no temporal leakage (train on past, predict future)
+- **Strict pre-match rolling features**: rolling windows are shifted so the current match is never included
 - **Row flipping**: half of training rows inverted to teach model symmetry
 - **Surface-weighted Elo**: blends grass, overall, and hard court ratings
 

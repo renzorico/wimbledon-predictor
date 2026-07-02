@@ -25,11 +25,19 @@ def load_matches(
 
     matches = pd.concat(frames, ignore_index=True)
 
-    # Parse date
+    # Parse date and establish a stable within-day order for downstream
+    # chronological feature builders.
     matches["tourney_date"] = pd.to_datetime(
         matches["tourney_date"], format="%Y%m%d", errors="coerce"
     )
-    matches = matches.sort_values("tourney_date").reset_index(drop=True)
+    if "match_num" in matches.columns:
+        matches["match_num"] = pd.to_numeric(matches["match_num"], errors="coerce")
+        matches = matches.sort_values(
+            ["tourney_date", "tourney_id", "match_num"],
+            kind="stable",
+        ).reset_index(drop=True)
+    else:
+        matches = matches.sort_values("tourney_date", kind="stable").reset_index(drop=True)
 
     if surfaces:
         surfaces_lower = [s.lower() for s in surfaces]

@@ -7,6 +7,7 @@ from src.config import (
     CV_SPLITS,
     RANDOM_STATE,
     XGB_SEARCH_ITERS,
+    XGB_SEARCH_JOBS,
     XGB_SEARCH_SPACE,
 )
 
@@ -19,6 +20,7 @@ def build_xgb_base() -> XGBClassifier:
         learning_rate=0.05,
         subsample=0.8,
         colsample_bytree=0.8,
+        n_jobs=1,
         random_state=RANDOM_STATE,
         eval_metric="logloss",
     )
@@ -28,6 +30,7 @@ def build_xgb_tuned(X_train, y_train) -> XGBClassifier:
     """Tune XGBClassifier with RandomizedSearchCV + TimeSeriesSplit."""
     tscv = TimeSeriesSplit(n_splits=CV_SPLITS)
     base = XGBClassifier(
+        n_jobs=1,
         random_state=RANDOM_STATE,
         eval_metric="logloss",
     )
@@ -38,7 +41,7 @@ def build_xgb_tuned(X_train, y_train) -> XGBClassifier:
         cv=tscv,
         scoring="neg_log_loss",
         random_state=RANDOM_STATE,
-        n_jobs=-1,
+        n_jobs=XGB_SEARCH_JOBS,
         verbose=1,
     )
     search.fit(X_train, y_train)

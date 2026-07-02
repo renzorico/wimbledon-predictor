@@ -45,10 +45,10 @@ st.subheader("Model performance comparison")
 
 comparison = pd.DataFrame({
     "Model": ["Weighted Elo", "Logistic Regression", "XGBoost"],
-    "Accuracy": [0.634, 0.801, 0.897],
-    "Log Loss": [0.630, 0.422, 0.242],
-    "Brier Score": [0.220, 0.137, 0.074],
-    "ROC AUC": [0.695, 0.888, 0.964],
+    "Accuracy": [0.633, 0.691, 0.806],
+    "Log Loss": [0.631, 0.596, 0.402],
+    "Brier Score": [0.221, 0.202, 0.132],
+    "ROC AUC": [0.694, 0.760, 0.896],
 })
 
 col_left, col_right = st.columns(2)

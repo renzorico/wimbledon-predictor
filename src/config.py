@@ -41,9 +41,11 @@ XGB_SEARCH_SPACE = {
     "colsample_bytree": [0.7, 0.8, 0.9],
 }
 XGB_SEARCH_ITERS = 50
+XGB_SEARCH_JOBS = 1
 
 # ── Simulation ────────────────────────────────────────────────────────────
 MONTE_CARLO_SIMS = 10_000
+WIMBLEDON_2026_START_DATE = "2026-06-29"
 
 # ── Round encoding (for features) ────────────────────────────────────────
 ROUND_DEPTH = {

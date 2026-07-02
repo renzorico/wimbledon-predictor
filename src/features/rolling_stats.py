@@ -19,14 +19,16 @@ def _unify_player_stats(matches: pd.DataFrame) -> pd.DataFrame:
     stat columns without the w_/l_ prefix.
     """
     # Winner rows
+    ordered = matches.reset_index(names="match_idx")
+
     w_cols = {
         "winner_id": "player_id",
         "tourney_date": "tourney_date",
         "surface": "surface",
     }
     w_stats = {f"w_{s}": s for s in _PLAYER_STATS}
-    winners = matches.rename(columns={**w_cols, **w_stats})[
-        ["player_id", "tourney_date", "surface"] + _PLAYER_STATS
+    winners = ordered.rename(columns={**w_cols, **w_stats})[
+        ["match_idx", "player_id", "tourney_date", "surface"] + _PLAYER_STATS
     ].copy()
     winners["won"] = True
 
@@ -37,13 +39,16 @@ def _unify_player_stats(matches: pd.DataFrame) -> pd.DataFrame:
         "surface": "surface",
     }
     l_stats = {f"l_{s}": s for s in _PLAYER_STATS}
-    losers = matches.rename(columns={**l_cols, **l_stats})[
-        ["player_id", "tourney_date", "surface"] + _PLAYER_STATS
+    losers = ordered.rename(columns={**l_cols, **l_stats})[
+        ["match_idx", "player_id", "tourney_date", "surface"] + _PLAYER_STATS
     ].copy()
     losers["won"] = False
 
     unified = pd.concat([winners, losers], ignore_index=True)
-    unified = unified.sort_values("tourney_date").reset_index(drop=True)
+    unified = unified.sort_values(
+        ["player_id", "tourney_date", "match_idx"],
+        kind="stable",
+    ).reset_index(drop=True)
     return unified
 
 
@@ -59,12 +64,12 @@ def compute_rolling_stats(matches: pd.DataFrame) -> pd.DataFrame:
     grouped = unified.groupby("player_id")
     for stat in _PLAYER_STATS:
         unified[f"roll_{stat}_{ROLLING_WINDOW}"] = grouped[stat].transform(
-            lambda s: s.rolling(ROLLING_WINDOW, min_periods=3).mean()
+            lambda s: s.shift(1).rolling(ROLLING_WINDOW, min_periods=3).mean()
         )
 
     # Win rate rolling
     unified[f"roll_win_rate_{ROLLING_WINDOW}"] = grouped["won"].transform(
-        lambda s: s.rolling(ROLLING_WINDOW, min_periods=3).mean()
+        lambda s: s.shift(1).rolling(ROLLING_WINDOW, min_periods=3).mean()
     )
 
     # Grass-specific rolling averages
@@ -73,12 +78,12 @@ def compute_rolling_stats(matches: pd.DataFrame) -> pd.DataFrame:
     for stat in _PLAYER_STATS:
         grass[f"grass_roll_{stat}_{ROLLING_WINDOW_GRASS}"] = (
             grass_grouped[stat].transform(
-                lambda s: s.rolling(ROLLING_WINDOW_GRASS, min_periods=2).mean()
+                lambda s: s.shift(1).rolling(ROLLING_WINDOW_GRASS, min_periods=2).mean()
             )
         )
     grass[f"grass_roll_win_rate_{ROLLING_WINDOW_GRASS}"] = (
         grass_grouped["won"].transform(
-            lambda s: s.rolling(ROLLING_WINDOW_GRASS, min_periods=2).mean()
+            lambda s: s.shift(1).rolling(ROLLING_WINDOW_GRASS, min_periods=2).mean()
         )
     )
 

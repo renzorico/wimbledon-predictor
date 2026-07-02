@@ -1,5 +1,7 @@
 """Load the 2026 Wimbledon draw and map to TML player IDs."""
 
+import hashlib
+
 import pandas as pd
 
 from src.config import PROCESSED_DIR, WIMBLEDON_2026_DIR
@@ -26,6 +28,11 @@ def _fuzzy_lookup(name: str, lookup: dict[str, str]) -> str | None:
     if len(matches) == 1:
         return matches[0]
     return None
+
+
+def _stable_new_player_id(name: str) -> str:
+    digest = hashlib.sha1(name.encode("utf-8")).hexdigest()[:10]
+    return f"NEW_{digest}"
 
 
 def load_wimbledon_2026_draw() -> WimbledonBracket:
@@ -58,8 +65,7 @@ def load_wimbledon_2026_draw() -> WimbledonBracket:
 
         pid = _fuzzy_lookup(name, name_to_id)
         if pid is None:
-            # Stable hash-based ID for players not in historical data
-            pid = f"NEW_{abs(hash(name)) % 100000}"
+            pid = _stable_new_player_id(name)
 
         players.append(Player(
             player_id=pid,

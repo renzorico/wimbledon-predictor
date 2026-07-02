@@ -14,6 +14,22 @@ STAT_COLS = [
     "l_ace", "l_df", "l_svpt", "l_1stIn", "l_1stWon", "l_2ndWon",
     "l_SvGms", "l_bpSaved", "l_bpFaced",
 ]
+MATCH_NUMERIC_COLS = [
+    "draw_size",
+    "best_of",
+    "minutes",
+    "match_num",
+    "winner_rank",
+    "winner_rank_points",
+    "loser_rank",
+    "loser_rank_points",
+    "winner_seed",
+    "loser_seed",
+    "winner_ht",
+    "loser_ht",
+    "winner_age",
+    "loser_age",
+]
 
 
 def _is_completed_match(score: str) -> bool:
@@ -36,6 +52,9 @@ def clean_matches(matches: pd.DataFrame) -> pd.DataFrame:
     """Clean raw match DataFrame. Returns copy."""
     df = matches.copy()
 
+    # Remove malformed rows introduced by repeated headers or broken scraping.
+    df = df[df["tourney_date"].notna()].reset_index(drop=True)
+
     # Drop walkovers and retirements
     has_score = df["score"].notna()
     completed = df["score"].apply(_is_completed_match)
@@ -48,6 +67,9 @@ def clean_matches(matches: pd.DataFrame) -> pd.DataFrame:
 
     # Cast stat columns to numeric
     for col in STAT_COLS:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+    for col in MATCH_NUMERIC_COLS:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
