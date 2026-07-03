@@ -1,89 +1,386 @@
-"""Live bracket page — visual draw with results and predictions."""
+"""Live bracket page — dynamic visual bracket with results and predictions."""
 
 import sys
 from pathlib import Path
 
 import pandas as pd
-import plotly.graph_objects as go
 import streamlit as st
 
 ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.config import DATA_DIR
+from src.simulation.bracket import MATCHES_PER_ROUND, ROUNDS, Match, Player
+from src.simulation.draw_loader import get_bracket_summary, load_wimbledon_2026_draw
+
 st.set_page_config(page_title="Live Bracket", layout="wide")
-st.title("Live bracket — R1 results")
 
-# ── Seed data with results ────────────────────────────────────────────────
-SEED_RESULTS = [
-    {"Seed": 1, "Player": "Jannik Sinner", "Q": "Q1", "R1": "W", "Opp": "M. Kecmanovic", "Score": "4-6 6-3 6-7(8) 6-2 6-3"},
-    {"Seed": 2, "Player": "Alexander Zverev", "Q": "Q4", "R1": "W", "Opp": "A. Blockx", "Score": "6-4 6-7(8) 7-6(5) 7-6(0)"},
-    {"Seed": 3, "Player": "Felix Auger-Aliassime", "Q": "Q2", "R1": "W", "Opp": "A. Shevchenko", "Score": "6-3 6-1 6-4"},
-    {"Seed": 4, "Player": "Ben Shelton", "Q": "Q3", "R1": "L", "Opp": "O. Virtanen", "Score": "6-4 3-6 6-7(8) 2-6 6-7(9)"},
-    {"Seed": 5, "Player": "Alex de Minaur", "Q": "Q1", "R1": "W", "Opp": "R. Burruchaga", "Score": "7-6(5) 6-1 6-0"},
-    {"Seed": 6, "Player": "Taylor Fritz", "Q": "Q4", "R1": "W", "Opp": "D. Lajovic", "Score": "6-3 6-4 6-3"},
-    {"Seed": 7, "Player": "Novak Djokovic", "Q": "Q2", "R1": "W", "Opp": "Y. Wu", "Score": "6-4 5-7 6-4 6-4"},
-    {"Seed": 8, "Player": "Daniil Medvedev", "Q": "Q3", "R1": "W", "Opp": "M. Cilic", "Score": "6-1 6-2 6-4"},
-    {"Seed": 9, "Player": "Flavio Cobolli", "Q": "Q1", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 10, "Player": "Alexander Bublik", "Q": "Q4", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 11, "Player": "Casper Ruud", "Q": "Q2", "R1": "L", "Opp": "H. Hurkacz", "Score": "4-6 2-6 6-7(7)"},
-    {"Seed": 12, "Player": "Andrey Rublev", "Q": "Q3", "R1": "L", "Opp": "R. Safiullin", "Score": "4-6 7-6(6) 3-6 6-3 6-7(12)"},
-    {"Seed": 13, "Player": "Jiri Lehecka", "Q": "Q1", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 14, "Player": "Luciano Darderi", "Q": "Q4", "R1": "L", "Opp": "E. Quinn", "Score": "6-7(7) 5-7 2-6"},
-    {"Seed": 15, "Player": "Jakub Mensik", "Q": "Q2", "R1": "W", "Opp": "T. Samuel", "Score": "7-5 3-6 3-6 6-3 7-6(7)"},
-    {"Seed": 16, "Player": "Learner Tien", "Q": "Q3", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 17, "Player": "Frances Tiafoe", "Q": "Q1", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 18, "Player": "Francisco Cerundolo", "Q": "Q4", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 19, "Player": "Karen Khachanov", "Q": "Q2", "R1": "W", "Opp": "B. Harris", "Score": "6-3 7-5 6-3 6-3"},
-    {"Seed": 20, "Player": "Arthur Fils", "Q": "Q3", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 21, "Player": "Tommy Paul", "Q": "Q1", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 22, "Player": "A. Davidovich Fokina", "Q": "Q4", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 23, "Player": "Rafael Jodar", "Q": "Q2", "R1": "W", "Opp": "F. Gill", "Score": "6-3 6-3 7-5"},
-    {"Seed": 24, "Player": "Joao Fonseca", "Q": "Q3", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 25, "Player": "Arthur Rinderknech", "Q": "Q1", "R1": "W", "Opp": "O. Tarvet", "Score": "7-6(4) 7-6(4) 4-6 7-5"},
-    {"Seed": 26, "Player": "Cameron Norrie", "Q": "Q4", "R1": "L", "Opp": "M. Zheng", "Score": "7-6(7) 2-6 7-6(2) 3-6 6-7(4)"},
-    {"Seed": 27, "Player": "Ugo Humbert", "Q": "Q2", "R1": "L", "Opp": "Z. Bergs", "Score": "2-6 5-7 6-4 6-3 3-6"},
-    {"Seed": 28, "Player": "Brandon Nakashima", "Q": "Q3", "R1": "W", "Opp": "J.P. Jones", "Score": "6-3 7-6(5) ..."},
-    {"Seed": 29, "Player": "T.M. Etcheverry", "Q": "Q1", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 30, "Player": "Alejandro Tabilo", "Q": "Q4", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 31, "Player": "Ignacio Buse", "Q": "Q2", "R1": "—", "Opp": "TBD", "Score": ""},
-    {"Seed": 32, "Player": "Matteo Arnaldi", "Q": "Q3", "R1": "—", "Opp": "TBD", "Score": ""},
-]
+# ── Constants ─────────────────────────────────────────────────────────────────
+ROUND_LABELS = {
+    "R1": "Round 1 (128)",
+    "R2": "Round 2 (64)",
+    "R3": "Round 3 (32)",
+    "R4": "Round 4 (16)",
+    "QF": "Quarter-Finals",
+    "SF": "Semi-Finals",
+    "F": "Final",
+}
 
-df = pd.DataFrame(SEED_RESULTS)
+PREDICTIONS_DIR = DATA_DIR / "predictions"
 
-# ── Quarter filter ────────────────────────────────────────────────────────
-quarter = st.selectbox("Quarter", ["All", "Q1", "Q2", "Q3", "Q4"])
-if quarter != "All":
-    df = df[df["Q"] == quarter]
+CSS = """
+<style>
+.match-card {
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    font-family: monospace;
+    font-size: 13px;
+}
+.match-card-header {
+    background: #1a1a1a;
+    color: #888;
+    font-size: 10px;
+    padding: 2px 8px;
+    letter-spacing: 0.05em;
+}
+.match-row {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    gap: 8px;
+    background: #111;
+    border-top: 1px solid #222;
+}
+.match-row.winner {
+    background: #0a3d1a;
+    color: #4ade80;
+}
+.match-row.loser {
+    background: #1a0808;
+    color: #6b3a3a;
+}
+.match-row.predicted-winner {
+    background: #1a1a3d;
+    color: #818cf8;
+}
+.match-row.predicted-loser {
+    background: #111;
+    color: #555;
+}
+.match-row.tbd {
+    color: #555;
+    font-style: italic;
+}
+.player-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.seed-badge {
+    color: #facc15;
+    font-weight: bold;
+    min-width: 28px;
+    font-size: 11px;
+}
+.prob-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 100px;
+}
+.prob-label {
+    font-size: 11px;
+    min-width: 34px;
+    text-align: right;
+    color: #aaa;
+}
+.prob-bar-track {
+    width: 60px;
+    height: 6px;
+    background: #222;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.prob-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+}
+.prob-bar-fill.high { background: #818cf8; }
+.prob-bar-fill.low  { background: #333; }
+</style>
+"""
 
-# ── Summary metrics ───────────────────────────────────────────────────────
-total_seeds = len(SEED_RESULTS)
-seeds_out = sum(1 for s in SEED_RESULTS if s["R1"] == "L")
-seeds_through = sum(1 for s in SEED_RESULTS if s["R1"] == "W")
-seeds_pending = total_seeds - seeds_out - seeds_through
 
-c1, c2, c3 = st.columns(3)
-c1.metric("Seeds through R1", seeds_through)
-c2.metric("Seeds eliminated", seeds_out, delta=f"-{seeds_out}", delta_color="inverse")
-c3.metric("Pending", seeds_pending)
+# ── Data loading ──────────────────────────────────────────────────────────────
 
-# ── Color-coded bracket table ─────────────────────────────────────────────
-st.subheader("Seed tracker")
+@st.cache_resource(ttl=300)
+def _load_bracket_data():
+    bracket = load_wimbledon_2026_draw()
+    summary = get_bracket_summary(bracket)
+    return bracket, summary
 
-def color_result(val):
-    if val == "W":
-        return "background-color: #0a3d1a; color: #4ade80;"
-    elif val == "L":
-        return "background-color: #3d0a0a; color: #f87171;"
-    return ""
 
-styled = df.style.map(color_result, subset=["R1"])
-st.dataframe(styled, use_container_width=True, hide_index=True, height=700)
+@st.cache_data(ttl=300)
+def _load_predictions() -> dict[str, dict]:
+    """Load latest snapshot predictions keyed by match_id."""
+    if not PREDICTIONS_DIR.exists():
+        return {}
 
-# ── Five-set thrillers ────────────────────────────────────────────────────
-st.subheader("Five-set matches")
-five_setters = [s for s in SEED_RESULTS if s["Score"].count("-") >= 5]
-if five_setters:
-    st.dataframe(pd.DataFrame(five_setters), use_container_width=True, hide_index=True)
-else:
-    st.info("No five-set matches tracked yet.")
+    date_dirs = sorted(
+        [d for d in PREDICTIONS_DIR.iterdir() if d.is_dir()],
+        reverse=True,
+    )
+    for date_dir in date_dirs:
+        pred_file = date_dir / "match_predictions.csv"
+        if pred_file.exists():
+            df = pd.read_csv(pred_file)
+            result: dict[str, dict] = {}
+            for _, row in df.iterrows():
+                result[str(row["match_id"])] = {
+                    "player_a": str(row["player_a"]),
+                    "player_b": str(row["player_b"]),
+                    "p_a": float(row["p_player_a"]),
+                    "p_b": float(row["p_player_b"]),
+                    "predicted_winner": str(row["predicted_winner"]),
+                    "confidence": float(row["confidence"]),
+                    "snapshot_date": str(row["snapshot_date"]),
+                }
+            return result
+    return {}
+
+
+# ── Rendering helpers ─────────────────────────────────────────────────────────
+
+def _player_label(player: Player | None) -> tuple[str, str]:
+    """Return (seed_str, name_str) for display."""
+    if player is None:
+        return ("", "TBD")
+    seed_str = f"[{player.seed}]" if player.seed else ""
+    return (seed_str, player.name)
+
+
+def _render_match_card(match: Match, pred: dict | None, match_label: str) -> str:
+    """Return HTML for a single match card."""
+    seed_a, name_a = _player_label(match.player_a)
+    seed_b, name_b = _player_label(match.player_b)
+
+    is_tbd_a = match.player_a is None
+    is_tbd_b = match.player_b is None
+
+    header = f'<div class="match-card-header">{match_label}</div>'
+
+    # ── Locked (result known) ─────────────────────────────────────────────
+    if match.locked and match.winner is not None:
+        winner_name = match.winner.name
+
+        class_a = "winner" if name_a == winner_name else "loser"
+        class_b = "winner" if name_b == winner_name else "loser"
+
+        row_a = (
+            f'<div class="match-row {class_a}">'
+            f'<span class="seed-badge">{seed_a}</span>'
+            f'<span class="player-name">{name_a}</span>'
+            f"</div>"
+        )
+        row_b = (
+            f'<div class="match-row {class_b}">'
+            f'<span class="seed-badge">{seed_b}</span>'
+            f'<span class="player-name">{name_b}</span>'
+            f"</div>"
+        )
+        return f'<div class="match-card">{header}{row_a}{row_b}</div>'
+
+    # ── Both players TBD ──────────────────────────────────────────────────
+    if is_tbd_a and is_tbd_b:
+        row_a = '<div class="match-row tbd"><span class="player-name">TBD</span></div>'
+        row_b = '<div class="match-row tbd"><span class="player-name">TBD</span></div>'
+        return f'<div class="match-card">{header}{row_a}{row_b}</div>'
+
+    # ── Prediction available ───────────────────────────────────────────────
+    if pred is not None and not is_tbd_a and not is_tbd_b:
+        p_a = pred["p_a"]
+        p_b = pred["p_b"]
+        predicted_winner = pred["predicted_winner"]
+
+        class_a = "predicted-winner" if name_a == predicted_winner else "predicted-loser"
+        class_b = "predicted-winner" if name_b == predicted_winner else "predicted-loser"
+
+        fill_a = "high" if name_a == predicted_winner else "low"
+        fill_b = "high" if name_b == predicted_winner else "low"
+
+        prob_bar_a = (
+            f'<div class="prob-bar-wrap">'
+            f'<span class="prob-label">{p_a:.0%}</span>'
+            f'<div class="prob-bar-track">'
+            f'<div class="prob-bar-fill {fill_a}" style="width:{p_a*100:.0f}%"></div>'
+            f"</div></div>"
+        )
+        prob_bar_b = (
+            f'<div class="prob-bar-wrap">'
+            f'<span class="prob-label">{p_b:.0%}</span>'
+            f'<div class="prob-bar-track">'
+            f'<div class="prob-bar-fill {fill_b}" style="width:{p_b*100:.0f}%"></div>'
+            f"</div></div>"
+        )
+
+        row_a = (
+            f'<div class="match-row {class_a}">'
+            f'<span class="seed-badge">{seed_a}</span>'
+            f'<span class="player-name">{name_a}</span>'
+            f"{prob_bar_a}</div>"
+        )
+        row_b = (
+            f'<div class="match-row {class_b}">'
+            f'<span class="seed-badge">{seed_b}</span>'
+            f'<span class="player-name">{name_b}</span>'
+            f"{prob_bar_b}</div>"
+        )
+        return f'<div class="match-card">{header}{row_a}{row_b}</div>'
+
+    # ── One player known, one TBD (no prediction yet) ─────────────────────
+    class_a = "tbd" if is_tbd_a else "match-row"
+    class_b = "tbd" if is_tbd_b else "match-row"
+
+    row_a = (
+        f'<div class="match-row {class_a}">'
+        f'<span class="seed-badge">{seed_a}</span>'
+        f'<span class="player-name">{name_a}</span>'
+        f"</div>"
+    )
+    row_b = (
+        f'<div class="match-row {class_b}">'
+        f'<span class="seed-badge">{seed_b}</span>'
+        f'<span class="player-name">{name_b}</span>'
+        f"</div>"
+    )
+    return f'<div class="match-card">{header}{row_a}{row_b}</div>'
+
+
+def _render_round_grid(
+    matches: list[Match],
+    predictions: dict[str, dict],
+    cols_per_row: int = 2,
+) -> None:
+    """Render a grid of match cards for a round."""
+    sorted_matches = sorted(matches, key=lambda m: int(m.match_id.split("_M")[1]))
+    rows = [sorted_matches[i : i + cols_per_row] for i in range(0, len(sorted_matches), cols_per_row)]
+
+    for row in rows:
+        cols = st.columns(cols_per_row)
+        for col_idx, match in enumerate(row):
+            pred = predictions.get(match.match_id)
+            round_num = int(match.match_id.split("_M")[1])
+            label = f"{match.round_name}  Match {round_num}"
+            html = _render_match_card(match, pred, label)
+            with cols[col_idx]:
+                st.markdown(html, unsafe_allow_html=True)
+
+
+# ── Main page ─────────────────────────────────────────────────────────────────
+
+st.markdown(CSS, unsafe_allow_html=True)
+st.title("Live Bracket")
+
+bracket, summary = _load_bracket_data()
+predictions = _load_predictions()
+
+snapshot_dates = sorted({v["snapshot_date"] for v in predictions.values()}, reverse=True)
+snapshot_label = snapshot_dates[0] if snapshot_dates else "none"
+
+# ── Tournament progress ───────────────────────────────────────────────────────
+total_matches = sum(MATCHES_PER_ROUND.values())  # 127
+locked_total = summary["locked_total"]
+progress_pct = locked_total / total_matches
+
+c1, c2, c3, c4 = st.columns(4)
+c1.metric("Matches completed", locked_total, delta=f"of {total_matches}")
+c2.metric("R1 complete", summary["r1_complete"], delta=f"of 64")
+c3.metric("R1 remaining", summary["r1_remaining"])
+c4.metric("Prediction snapshot", snapshot_label)
+
+st.progress(progress_pct, text=f"Tournament progress: {progress_pct:.0%}")
+st.divider()
+
+# ── Round selector tabs ───────────────────────────────────────────────────────
+tab_labels = [ROUND_LABELS[r] for r in ROUNDS]
+tabs = st.tabs(tab_labels)
+
+for tab, round_name in zip(tabs, ROUNDS):
+    with tab:
+        round_matches = bracket.get_round_matches(round_name)
+
+        if not round_matches:
+            st.info("No matches found for this round yet.")
+            continue
+
+        total_in_round = MATCHES_PER_ROUND[round_name]
+        locked_in_round = sum(1 for m in round_matches if m.locked)
+        predicted_in_round = sum(1 for m in round_matches if m.match_id in predictions)
+
+        mc1, mc2, mc3 = st.columns(3)
+        mc1.metric("Completed", f"{locked_in_round} / {total_in_round}")
+        mc2.metric("Predicted (model)", predicted_in_round)
+        mc3.metric("TBD", total_in_round - locked_in_round - len(round_matches) + locked_in_round)
+
+        # Columns per row: fewer for later rounds to give cards more room
+        if round_name in ("R1", "R2"):
+            cols_per_row = 4
+        elif round_name in ("R3", "R4"):
+            cols_per_row = 3
+        elif round_name == "QF":
+            cols_per_row = 2
+        else:
+            cols_per_row = 1
+
+        _render_round_grid(round_matches, predictions, cols_per_row=cols_per_row)
+
+# ── Late-round visual summary ─────────────────────────────────────────────────
+st.divider()
+st.subheader("Final stages at a glance")
+
+qf_matches = sorted(bracket.get_round_matches("QF"), key=lambda m: int(m.match_id.split("_M")[1]))
+sf_matches = sorted(bracket.get_round_matches("SF"), key=lambda m: int(m.match_id.split("_M")[1]))
+f_matches = bracket.get_round_matches("F")
+
+# QF -> SF -> F in three column groups
+col_left, col_mid_left, col_center, col_mid_right, col_right = st.columns([3, 1, 3, 1, 3])
+
+def _render_compact(match: Match, pred: dict | None) -> str:
+    if match is None:
+        return ""
+    label = match.match_id
+    return _render_match_card(match, pred, label)
+
+
+with col_left:
+    st.caption("Quarter-Finals (top half)")
+    for m in qf_matches[:2]:
+        st.markdown(_render_compact(m, predictions.get(m.match_id)), unsafe_allow_html=True)
+
+with col_mid_left:
+    st.write("")
+
+with col_center:
+    st.caption("Semi-Finals")
+    for m in sf_matches:
+        st.markdown(_render_compact(m, predictions.get(m.match_id)), unsafe_allow_html=True)
+    st.caption("Final")
+    for m in f_matches:
+        st.markdown(_render_compact(m, predictions.get(m.match_id)), unsafe_allow_html=True)
+
+with col_mid_right:
+    st.write("")
+
+with col_right:
+    st.caption("Quarter-Finals (bottom half)")
+    for m in qf_matches[2:]:
+        st.markdown(_render_compact(m, predictions.get(m.match_id)), unsafe_allow_html=True)
+
+# ── Champion readout ──────────────────────────────────────────────────────────
+champion = bracket.get_champion()
+if champion:
+    seed_str = f" (seed {champion.seed})" if champion.seed else ""
+    st.success(f"Champion: {champion.name}{seed_str}")
