@@ -100,7 +100,7 @@ if has_resolved:
             yaxis_tickformat=".0%",
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
-            font_color="#FAFAFA",
+            font_color="#1A1A1A",
         )
         st.plotly_chart(fig_acc, use_container_width=True)
 
@@ -120,7 +120,7 @@ if has_resolved:
             title="Resolved predictions by day",
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
-            font_color="#FAFAFA",
+            font_color="#1A1A1A",
         )
         st.plotly_chart(fig_counts, use_container_width=True)
 else:
@@ -186,7 +186,7 @@ if not resolved_matches.empty:
         yaxis_tickformat=".0%",
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        font_color="#FAFAFA",
+        font_color="#1A1A1A",
         legend={"yanchor": "bottom", "y": 0.01, "xanchor": "right", "x": 0.99},
     )
     st.plotly_chart(fig_cal, use_container_width=True)
@@ -223,83 +223,166 @@ if "evaluated" in snap:
     elif status_filter == "Pending only":
         detail = detail[~detail["resolved"]]
 
-    def color_correct(row):
-        if not row["resolved"]:
-            return [""] * len(row)
-        if row["correct"]:
-            return ["background-color: #0a3d1a; color: #4ade80;"] * len(row)
-        return ["background-color: #3d0a0a; color: #f87171;"] * len(row)
+    ROUND_ORDER = {"R1": 1, "R2": 2, "R3": 3, "R4": 4, "QF": 5, "SF": 6, "F": 7}
+    detail = detail.copy()
+    detail["_round_order"] = detail["round"].map(ROUND_ORDER).fillna(9)
+    detail = detail.sort_values(["_round_order", "match_id"]).reset_index(drop=True)
 
-    display_cols = [
-        "match_id", "round", "player_a", "player_b",
-        "p_player_a", "p_player_b", "predicted_winner",
-        "confidence", "actual_winner", "correct",
-    ]
-    available_cols = [c for c in display_cols if c in detail.columns]
-    styled = detail[available_cols].style.apply(color_correct, axis=1).format({
-        "p_player_a": "{:.1%}",
-        "p_player_b": "{:.1%}",
-        "confidence": "{:.1%}",
-    })
-    st.dataframe(styled, use_container_width=True, hide_index=True)
+    for rnd, group in detail.groupby("round", sort=False):
+        st.markdown(
+            f"<p style='font-weight:600; color:#4B2D83; margin:1rem 0 0.4rem;'>{rnd}</p>",
+            unsafe_allow_html=True,
+        )
+        cols = st.columns(2)
+        for i, (_, row) in enumerate(group.iterrows()):
+            p_a = float(row["p_player_a"])
+            p_b = float(row["p_player_b"])
+            pred_winner = str(row["predicted_winner"])
+            player_a = str(row["player_a"])
+            player_b = str(row["player_b"])
+            resolved = bool(row.get("resolved", False))
+            correct = bool(row.get("correct", False))
+            actual = row.get("actual_winner", None)
+
+            if resolved and correct:
+                border = "#00703C"
+                status_html = f"<span style='color:#00703C; font-weight:600;'>Correct</span> — {actual} won"
+            elif resolved and not correct:
+                border = "#C62828"
+                status_html = f"<span style='color:#C62828; font-weight:600;'>Incorrect</span> — {actual} won"
+            else:
+                border = "#E0E0E0"
+                status_html = "<span style='color:#9E9E9E;'>Pending</span>"
+
+            a_bold = f"<strong>{player_a}</strong>" if pred_winner == player_a else player_a
+            b_bold = f"<strong>{player_b}</strong>" if pred_winner == player_b else player_b
+            a_color = "#00703C" if pred_winner == player_a else "#555"
+            b_color = "#00703C" if pred_winner == player_b else "#555"
+
+            card = f"""
+            <div style="border:1.5px solid {border}; border-radius:8px; padding:10px 14px;
+                        margin-bottom:8px; background:#FAFAFA; font-family:sans-serif;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <span style="color:{a_color}; font-size:14px;">{a_bold}</span>
+                <span style="font-size:12px; color:#999; font-weight:600;">{p_a:.0%}</span>
+              </div>
+              <div style="width:100%; height:6px; background:#E8E8E8; border-radius:3px; margin-bottom:6px;">
+                <div style="width:{p_a*100:.1f}%; height:100%; background:#00703C; border-radius:3px;"></div>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <span style="color:{b_color}; font-size:14px;">{b_bold}</span>
+                <span style="font-size:12px; color:#999; font-weight:600;">{p_b:.0%}</span>
+              </div>
+              <div style="font-size:11px; color:#888; margin-top:2px;">{status_html}
+                <span style="float:right;">Confidence: {max(p_a, p_b):.0%}</span>
+              </div>
+            </div>
+            """
+            with cols[i % 2]:
+                st.markdown(card, unsafe_allow_html=True)
 else:
     st.info(f"No evaluated predictions for {selected_date}.")
 
 
-# ── Title probability history ────────────────────────────────────────────
+# ── Title odds leaderboard ───────────────────────────────────────────────
 
 st.markdown("---")
-st.subheader("Title probability history")
+st.subheader("Title odds leaderboard")
 
-title_rows = []
-for date, snap in snapshots.items():
-    if "titles" not in snap:
-        continue
-    for _, row in snap["titles"].iterrows():
-        title_rows.append({
-            "Date": date,
-            "Player": row["player"],
-            "P(Title)": row["p_title"],
-        })
+latest_date = max(snapshots.keys())
+latest_titles = snapshots[latest_date].get("titles")
 
-if title_rows:
-    title_history = pd.DataFrame(title_rows)
+if latest_titles is not None:
+    # Build leaderboard with delta vs previous snapshot if available
+    sorted_dates = sorted(snapshots.keys())
+    prev_titles = None
+    if len(sorted_dates) >= 2:
+        prev_date = sorted_dates[-2]
+        prev_titles = snapshots[prev_date].get("titles")
 
-    # Let user pick players — default to top 8 from most recent snapshot
-    latest_date = max(snapshots.keys())
-    latest_titles = snapshots[latest_date].get("titles")
-    if latest_titles is not None:
-        top_players = latest_titles.nlargest(8, "p_title")["player"].tolist()
-    else:
-        top_players = (
-            title_history.groupby("Player")["P(Title)"]
-            .max()
-            .nlargest(8)
-            .index.tolist()
-        )
+    latest_sorted = latest_titles.sort_values("p_title", ascending=False).reset_index(drop=True)
 
-    all_players = sorted(title_history["Player"].unique())
-    selected_players = st.multiselect(
-        "Players", all_players, default=top_players,
-    )
+    prev_lookup = {}
+    if prev_titles is not None:
+        prev_lookup = dict(zip(prev_titles["player"], prev_titles["p_title"]))
 
-    if selected_players:
-        filtered = title_history[title_history["Player"].isin(selected_players)]
+    rows_html = ""
+    for rank, row in latest_sorted.head(16).iterrows():
+        player = row["player"]
+        prob = row["p_title"]
+        prev = prev_lookup.get(player)
+        if prev is not None:
+            delta = prob - prev
+            if abs(delta) < 0.001:
+                delta_html = "<span style='color:#9E9E9E;'>—</span>"
+            elif delta > 0:
+                delta_html = f"<span style='color:#00703C;'>+{delta:.1%}</span>"
+            else:
+                delta_html = f"<span style='color:#C62828;'>{delta:.1%}</span>"
+        else:
+            delta_html = ""
+
+        bar_pct = prob / latest_sorted["p_title"].iloc[0] * 100
+        rows_html += f"""
+        <tr>
+          <td style="padding:8px 12px; color:#9E9E9E; font-size:13px;">{rank+1}</td>
+          <td style="padding:8px 4px; font-size:14px; font-weight:500;">{player}</td>
+          <td style="padding:8px 12px; font-size:14px; font-weight:700; color:#00703C;">{prob:.1%}</td>
+          <td style="padding:8px 12px; width:180px;">
+            <div style="background:#E8F5E9; border-radius:4px; height:10px; width:100%;">
+              <div style="background:#00703C; border-radius:4px; height:10px; width:{bar_pct:.1f}%;"></div>
+            </div>
+          </td>
+          <td style="padding:8px 12px; font-size:13px; text-align:right;">{delta_html}</td>
+        </tr>
+        """
+
+    delta_header = f"vs {sorted_dates[-2]}" if prev_titles is not None else ""
+    table_html = f"""
+    <table style="width:100%; border-collapse:collapse; font-family:sans-serif;">
+      <thead>
+        <tr style="border-bottom:2px solid #E0E0E0;">
+          <th style="padding:8px 12px; text-align:left; color:#9E9E9E; font-size:12px; font-weight:500;">#</th>
+          <th style="padding:8px 4px; text-align:left; color:#9E9E9E; font-size:12px; font-weight:500;">Player</th>
+          <th style="padding:8px 12px; text-align:left; color:#9E9E9E; font-size:12px; font-weight:500;">P(Title)</th>
+          <th style="padding:8px 12px; text-align:left; color:#9E9E9E; font-size:12px; font-weight:500;">Odds</th>
+          <th style="padding:8px 12px; text-align:right; color:#9E9E9E; font-size:12px; font-weight:500;">{delta_header}</th>
+        </tr>
+      </thead>
+      <tbody>{rows_html}</tbody>
+    </table>
+    """
+    st.markdown(table_html, unsafe_allow_html=True)
+
+    # Line chart only if we have multiple snapshots
+    title_rows = []
+    for date, snap in snapshots.items():
+        if "titles" not in snap:
+            continue
+        for _, trow in snap["titles"].iterrows():
+            title_rows.append({"Date": date, "Player": trow["player"], "P(Title)": trow["p_title"]})
+
+    if len(snapshots) >= 2 and title_rows:
+        st.markdown("---")
+        st.subheader("Odds movement over time")
+        title_history = pd.DataFrame(title_rows)
+        top_players = latest_sorted.head(8)["player"].tolist()
+        filtered = title_history[title_history["Player"].isin(top_players)]
         fig_title = px.line(
-            filtered,
-            x="Date",
-            y="P(Title)",
-            color="Player",
-            markers=True,
-            title="Title probability over time",
+            filtered, x="Date", y="P(Title)", color="Player",
+            markers=True, title="Title probability — top 8 contenders",
+            color_discrete_sequence=px.colors.qualitative.Set2,
         )
         fig_title.update_layout(
             yaxis_tickformat=".1%",
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
-            font_color="#FAFAFA",
-            legend={"orientation": "h", "yanchor": "bottom", "y": -0.3},
+            font_color="#1A1A1A",
+            legend={"orientation": "h", "yanchor": "bottom", "y": -0.4},
+            height=400,
         )
         st.plotly_chart(fig_title, use_container_width=True)
+    else:
+        st.caption("Odds movement chart will appear once multiple daily snapshots are available.")
 else:
-    st.info("Title probability history will appear after multiple snapshots are saved.")
+    st.info("Title probability data not found.")
