@@ -15,7 +15,7 @@ from src.simulation.draw_loader import get_bracket_summary, load_wimbledon_2026_
 from src.simulation.monte_carlo import simulate_tournament
 from src.simulation.predictor import CALIBRATED_MODEL_NAME, MatchPredictor
 
-st.set_page_config(page_title="Tournament Simulation", layout="wide")
+st.set_page_config(page_title="Title Race", layout="wide")
 st.title("Monte Carlo tournament simulation")
 st.caption("Full 128-player draw using the trained match model on each unresolved match")
 

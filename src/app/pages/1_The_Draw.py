@@ -16,7 +16,7 @@ from src.config import DATA_DIR
 from src.simulation.bracket import MATCHES_PER_ROUND, ROUNDS, Match, Player
 from src.simulation.draw_loader import get_bracket_summary, load_wimbledon_2026_draw
 
-st.set_page_config(page_title="Live Bracket", layout="wide")
+st.set_page_config(page_title="The Draw", layout="wide")
 
 # ── Constants ──────────────────────────────────────────────────────────────────
 
