@@ -8,12 +8,15 @@ from pathlib import Path
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+import streamlit_analytics2 as streamlit_analytics
 
 ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
 from src.config import DATA_DIR, WIMBLEDON_2026_START_DATE
 from src.simulation.bracket import MATCHES_PER_ROUND, ROUNDS
+
+ANALYTICS_FILE = DATA_DIR / "analytics.json"
 
 PREDICTIONS_DIR = DATA_DIR / "predictions"
 
@@ -86,6 +89,10 @@ def compute_tournament_day() -> int:
     delta = (today - start).days + 1
     return max(1, delta)
 
+
+# ── Analytics ─────────────────────────────────────────────────────────────────
+
+streamlit_analytics.start_tracking(save_to_json=str(ANALYTICS_FILE))
 
 # ── Load data ────────────────────────────────────────────────────────────────
 
@@ -475,3 +482,5 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+streamlit_analytics.stop_tracking(save_to_json=str(ANALYTICS_FILE))
