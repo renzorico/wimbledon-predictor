@@ -51,7 +51,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add README.md data/processed models data/predictions data/analytics.json scripts src tests .github/workflows/daily-update.yml
+          git add README.md data/processed models data/predictions scripts src tests .github/workflows/daily-update.yml
+          git add data/analytics.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
