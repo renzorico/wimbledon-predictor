@@ -1,0 +1,10 @@
+snapshot_date,match_id,round,player_a,player_b,p_player_a,p_player_b,predicted_winner,confidence,model
+2026-07-05,R3_M13,R3,Taylor Fritz,Lorenzo Sonego,0.7827077725297416,0.21729222747025845,Taylor Fritz,0.7827077725297416,XGBoost calibrated
+2026-07-05,R3_M11,R3,Grigor Dimitrov,Matteo Berrettini,0.49091753596341625,0.5090824640365837,Matteo Berrettini,0.5090824640365837,XGBoost calibrated
+2026-07-05,R3_M14,R3,Frances Tiafoe,Alexander Bublik,0.5879537586238466,0.4120462413761534,Frances Tiafoe,0.5879537586238466,XGBoost calibrated
+2026-07-05,R4_M4,R4,Roman Safiullin,Novak Djokovic,0.34668956122142386,0.6533104387785762,Novak Djokovic,0.6533104387785762,XGBoost calibrated
+2026-07-05,R4_M1,R4,Jannik Sinner,Shintaro Mochizuki,0.9,0.09999999999999998,Jannik Sinner,0.9,XGBoost calibrated
+2026-07-05,R4_M2,R4,Hubert Hurkacz,Jan-Lennard Struff,0.6097466119943957,0.3902533880056043,Hubert Hurkacz,0.6097466119943957,XGBoost calibrated
+2026-07-05,R4_M3,R4,Felix Auger-Aliassime,Alejandro Davidovich Fokina,0.6078820196887444,0.39211798031125555,Felix Auger-Aliassime,0.6078820196887444,XGBoost calibrated
+2026-07-05,R4_M5,R4,Alex de Minaur,Flavio Cobolli,0.7077607151705987,0.2922392848294013,Alex de Minaur,0.7077607151705987,XGBoost calibrated
+2026-07-05,R4_M8,R4,Jiri Lehecka,Alexander Zverev,0.31444187911122323,0.6855581208887768,Alexander Zverev,0.6855581208887768,XGBoost calibrated

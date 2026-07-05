@@ -10,9 +10,9 @@ snapshot_date,match_id,round,player_a,player_b,p_player_a,p_player_b,predicted_w
 2026-07-03,R3_M8,R3,Arthur Rinderknech,Novak Djokovic,0.1903314636338289,0.8096685363661711,Novak Djokovic,0.8096685363661711,XGBoost calibrated,Novak Djokovic,True,True
 2026-07-03,R3_M5,R3,Felix Auger-Aliassime,Michael Zheng,0.6681389055739466,0.3318610944260534,Felix Auger-Aliassime,0.6681389055739466,XGBoost calibrated,Felix Auger-Aliassime,True,True
 2026-07-03,R3_M2,R3,Rafael Jodar,Shintaro Mochizuki,0.7595614363662715,0.2404385636337285,Rafael Jodar,0.7595614363662715,XGBoost calibrated,Shintaro Mochizuki,True,False
-2026-07-03,R3_M9,R3,Alex de Minaur,Zachary Svajda,0.7680822168298258,0.2319177831701742,Alex de Minaur,0.7680822168298258,XGBoost calibrated,,False,False
+2026-07-03,R3_M9,R3,Alex de Minaur,Zachary Svajda,0.7680822168298258,0.2319177831701742,Alex de Minaur,0.7680822168298258,XGBoost calibrated,Alex de Minaur,True,True
 2026-07-03,R3_M13,R3,Taylor Fritz,Lorenzo Sonego,0.7733287068061185,0.2266712931938814,Taylor Fritz,0.7733287068061185,XGBoost calibrated,,False,False
-2026-07-03,R3_M12,R3,Zizou Bergs,Arthur Fery,0.5583062337717057,0.4416937662282942,Zizou Bergs,0.5583062337717057,XGBoost calibrated,,False,False
-2026-07-03,R3_M16,R3,Marcos Giron,Alexander Zverev,0.4240912922360736,0.5759087077639263,Alexander Zverev,0.5759087077639263,XGBoost calibrated,,False,False
-2026-07-03,R3_M10,R3,Karen Khachanov,Flavio Cobolli,0.569345413211939,0.430654586788061,Karen Khachanov,0.569345413211939,XGBoost calibrated,,False,False
+2026-07-03,R3_M12,R3,Zizou Bergs,Arthur Fery,0.5583062337717057,0.4416937662282942,Zizou Bergs,0.5583062337717057,XGBoost calibrated,Arthur Fery,True,False
+2026-07-03,R3_M16,R3,Marcos Giron,Alexander Zverev,0.4240912922360736,0.5759087077639263,Alexander Zverev,0.5759087077639263,XGBoost calibrated,Alexander Zverev,True,True
+2026-07-03,R3_M10,R3,Karen Khachanov,Flavio Cobolli,0.569345413211939,0.430654586788061,Karen Khachanov,0.569345413211939,XGBoost calibrated,Flavio Cobolli,True,False
 2026-07-03,R3_M15,R3,Jiri Lehecka,Juan Pablo Munar,0.7534202938325708,0.2465797061674292,Jiri Lehecka,0.7534202938325708,XGBoost calibrated,,False,False
