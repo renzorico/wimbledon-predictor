@@ -1,13 +1,13 @@
 snapshot_date,match_id,round,player_a,player_b,p_player_a,p_player_b,predicted_winner,confidence,model,actual_winner,resolved,correct
 2026-07-04,R3_M9,R3,Alex de Minaur,Zachary Svajda,0.7683697113130532,0.2316302886869468,Alex de Minaur,0.7683697113130532,XGBoost calibrated,Alex de Minaur,True,True
-2026-07-04,R3_M13,R3,Taylor Fritz,Lorenzo Sonego,0.7827077725297416,0.2172922274702584,Taylor Fritz,0.7827077725297416,XGBoost calibrated,,False,False
+2026-07-04,R3_M13,R3,Taylor Fritz,Lorenzo Sonego,0.7827077725297416,0.2172922274702584,Taylor Fritz,0.7827077725297416,XGBoost calibrated,Taylor Fritz,True,True
 2026-07-04,R3_M12,R3,Zizou Bergs,Arthur Fery,0.5292873333014042,0.4707126666985958,Zizou Bergs,0.5292873333014042,XGBoost calibrated,Arthur Fery,True,False
 2026-07-04,R3_M16,R3,Marcos Giron,Alexander Zverev,0.429839822513396,0.5701601774866041,Alexander Zverev,0.5701601774866041,XGBoost calibrated,Alexander Zverev,True,True
 2026-07-04,R3_M10,R3,Karen Khachanov,Flavio Cobolli,0.5728761362526931,0.4271238637473069,Karen Khachanov,0.5728761362526931,XGBoost calibrated,Flavio Cobolli,True,False
-2026-07-04,R3_M11,R3,Grigor Dimitrov,Matteo Berrettini,0.4909175359634162,0.5090824640365837,Matteo Berrettini,0.5090824640365837,XGBoost calibrated,,False,False
+2026-07-04,R3_M11,R3,Grigor Dimitrov,Matteo Berrettini,0.4909175359634162,0.5090824640365837,Matteo Berrettini,0.5090824640365837,XGBoost calibrated,Grigor Dimitrov,True,False
 2026-07-04,R3_M15,R3,Jiri Lehecka,Juan Pablo Munar,0.7533247252785966,0.2466752747214033,Jiri Lehecka,0.7533247252785966,XGBoost calibrated,,False,False
-2026-07-04,R3_M14,R3,Frances Tiafoe,Alexander Bublik,0.5879537586238466,0.4120462413761534,Frances Tiafoe,0.5879537586238466,XGBoost calibrated,,False,False
-2026-07-04,R4_M4,R4,Roman Safiullin,Novak Djokovic,0.3466895612214238,0.6533104387785762,Novak Djokovic,0.6533104387785762,XGBoost calibrated,,False,False
-2026-07-04,R4_M1,R4,Jannik Sinner,Shintaro Mochizuki,0.9,0.0999999999999999,Jannik Sinner,0.9,XGBoost calibrated,,False,False
+2026-07-04,R3_M14,R3,Frances Tiafoe,Alexander Bublik,0.5879537586238466,0.4120462413761534,Frances Tiafoe,0.5879537586238466,XGBoost calibrated,Alexander Bublik,True,False
+2026-07-04,R4_M4,R4,Roman Safiullin,Novak Djokovic,0.3466895612214238,0.6533104387785762,Novak Djokovic,0.6533104387785762,XGBoost calibrated,Novak Djokovic,True,True
+2026-07-04,R4_M1,R4,Jannik Sinner,Shintaro Mochizuki,0.9,0.0999999999999999,Jannik Sinner,0.9,XGBoost calibrated,Jannik Sinner,True,True
 2026-07-04,R4_M2,R4,Hubert Hurkacz,Jan-Lennard Struff,0.6097466119943957,0.3902533880056043,Hubert Hurkacz,0.6097466119943957,XGBoost calibrated,,False,False
-2026-07-04,R4_M3,R4,Felix Auger-Aliassime,Alejandro Davidovich Fokina,0.6078820196887444,0.3921179803112555,Felix Auger-Aliassime,0.6078820196887444,XGBoost calibrated,,False,False
+2026-07-04,R4_M3,R4,Felix Auger-Aliassime,Alejandro Davidovich Fokina,0.6078820196887444,0.3921179803112555,Felix Auger-Aliassime,0.6078820196887444,XGBoost calibrated,Felix Auger-Aliassime,True,True

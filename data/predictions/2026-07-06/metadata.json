@@ -1,0 +1,14 @@
+{
+  "snapshot_date": "2026-07-06",
+  "created_at": "2026-07-06T01:25:39",
+  "model": "XGBoost calibrated",
+  "n_sims": 10000,
+  "reference_date": "2026-07-06",
+  "history_max_date": "2026-07-05",
+  "bracket_summary": {
+    "r1_complete": 64,
+    "r1_remaining": 0,
+    "r1_pct": "100%",
+    "locked_total": 115
+  }
+}
