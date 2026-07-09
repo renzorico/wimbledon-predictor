@@ -1,8 +1,8 @@
 {
   "snapshot_date": "2026-07-07",
   "predictions": 4,
-  "resolved": 2,
+  "resolved": 3,
   "correct": 2,
-  "accuracy": 1.0,
-  "average_confidence_resolved": 0.7046035786038056
+  "accuracy": 0.6666666666666666,
+  "average_confidence_resolved": 0.6943533200486943
 }

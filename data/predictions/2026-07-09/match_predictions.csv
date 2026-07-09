@@ -1,0 +1,4 @@
+snapshot_date,match_id,round,player_a,player_b,p_player_a,p_player_b,predicted_winner,confidence,model
+2026-07-09,R4_M2,R4,Hubert Hurkacz,Jan-Lennard Struff,0.6270906806735154,0.37290931932648463,Hubert Hurkacz,0.6270906806735154,XGBoost calibrated
+2026-07-09,SF_M1,SF,Jannik Sinner,Novak Djokovic,0.5352810652274955,0.4647189347725045,Jannik Sinner,0.5352810652274955,XGBoost calibrated
+2026-07-09,SF_M2,SF,Arthur Fery,Alexander Zverev,0.25137072572394764,0.7486292742760523,Alexander Zverev,0.7486292742760523,XGBoost calibrated

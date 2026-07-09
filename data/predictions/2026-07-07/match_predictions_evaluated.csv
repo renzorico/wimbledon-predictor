@@ -2,4 +2,4 @@ snapshot_date,match_id,round,player_a,player_b,p_player_a,p_player_b,predicted_w
 2026-07-07,R4_M2,R4,Hubert Hurkacz,Jan-Lennard Struff,0.6097466119943957,0.3902533880056043,Hubert Hurkacz,0.6097466119943957,XGBoost calibrated,,False,False
 2026-07-07,R4_M8,R4,Jiri Lehecka,Alexander Zverev,0.3063255322210024,0.6936744677789975,Alexander Zverev,0.6936744677789975,XGBoost calibrated,Alexander Zverev,True,True
 2026-07-07,QF_M2,QF,Felix Auger-Aliassime,Novak Djokovic,0.2844673105713862,0.7155326894286138,Novak Djokovic,0.7155326894286138,XGBoost calibrated,Novak Djokovic,True,True
-2026-07-07,QF_M3,QF,Flavio Cobolli,Arthur Fery,0.6738528029384718,0.3261471970615281,Flavio Cobolli,0.6738528029384718,XGBoost calibrated,,False,False
+2026-07-07,QF_M3,QF,Flavio Cobolli,Arthur Fery,0.6738528029384718,0.3261471970615281,Flavio Cobolli,0.6738528029384718,XGBoost calibrated,Arthur Fery,True,False
