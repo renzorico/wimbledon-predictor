@@ -64,6 +64,25 @@ latest_date = sorted_dates[-1]
 
 st.subheader("Accuracy summary")
 
+# Build unique matches (earliest snapshot per match_id) for overall metrics.
+all_evaluated = pd.concat(
+    [snap["evaluated"] for snap in snapshots.values() if "evaluated" in snap],
+    ignore_index=True,
+)
+if not all_evaluated.empty:
+    unique_matches = (
+        all_evaluated.sort_values("snapshot_date")
+        .drop_duplicates(subset=["match_id"], keep="first")
+    )
+else:
+    unique_matches = all_evaluated
+
+total_unique = len(unique_matches)
+total_resolved = int(unique_matches["resolved"].sum()) if not unique_matches.empty else 0
+total_correct = int(unique_matches["correct"].sum()) if not unique_matches.empty else 0
+overall_accuracy = total_correct / total_resolved if total_resolved > 0 else None
+
+# Per-snapshot breakdown for charts.
 accuracy_rows = []
 for date, snap in snapshots.items():
     s = snap.get("summary", {})
@@ -76,13 +95,10 @@ for date, snap in snapshots.items():
         "Avg confidence": s.get("average_confidence_resolved"),
     })
 acc_df = pd.DataFrame(accuracy_rows)
-total_resolved = int(acc_df["Resolved"].sum())
-total_correct = int(acc_df["Correct"].sum())
-overall_accuracy = total_correct / total_resolved if total_resolved > 0 else None
 
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Snapshots saved", len(snapshots))
-c2.metric("Total predictions", int(acc_df["Predictions made"].sum()))
+c2.metric("Unique predictions", total_unique)
 c3.metric("Resolved", total_resolved)
 c4.metric(
     "Overall accuracy",
@@ -144,20 +160,17 @@ st.markdown("---")
 st.subheader("Match prediction record")
 st.caption("Every match the model predicted — when, what it said, and what happened.")
 
-all_preds = pd.concat(
-    [snap["evaluated"] for snap in snapshots.values() if "evaluated" in snap],
-    ignore_index=True,
-)
+# Reuse already-computed unique_matches (earliest snapshot per match_id).
+all_preds = unique_matches.copy()
 
 if all_preds.empty:
     st.info("No predictions recorded yet.")
     st.stop()
 
 ROUND_ORDER = {"R1": 1, "R2": 2, "R3": 3, "R4": 4, "QF": 5, "SF": 6, "F": 7}
-all_preds = all_preds.copy()
 all_preds["_round_order"] = all_preds["round"].map(ROUND_ORDER).fillna(9)
 all_preds = all_preds.sort_values(
-    ["_round_order", "snapshot_date", "match_id"]
+    ["_round_order", "match_id"]
 ).reset_index(drop=True)
 
 view_filter = st.radio(
