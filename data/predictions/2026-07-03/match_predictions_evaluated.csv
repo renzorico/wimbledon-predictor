@@ -1,5 +1,5 @@
 snapshot_date,match_id,round,player_a,player_b,p_player_a,p_player_b,predicted_winner,confidence,model,actual_winner,resolved,correct
-2026-07-03,R2_M28,R2,Kevin Jacquet,Alexander Bublik,0.2893730071305667,0.7106269928694333,Alexander Bublik,0.7106269928694333,XGBoost calibrated,,False,False
+2026-07-03,R2_M28,R2,Kevin Jacquet,Alexander Bublik,0.2893730071305667,0.7106269928694333,Alexander Bublik,0.7106269928694333,XGBoost calibrated,Alexander Bublik,True,True
 2026-07-03,R2_M21,R2,Jakub Mensik,Grigor Dimitrov,0.6000365112145305,0.3999634887854695,Jakub Mensik,0.6000365112145305,XGBoost calibrated,Grigor Dimitrov,True,False
 2026-07-03,R2_M27,R2,Frances Tiafoe,Jan Choinski,0.8152286592873512,0.1847713407126487,Frances Tiafoe,0.8152286592873512,XGBoost calibrated,Frances Tiafoe,True,True
 2026-07-03,R3_M1,R3,Jannik Sinner,Jenson Brooksby,0.9,0.0999999999999999,Jannik Sinner,0.9,XGBoost calibrated,Jannik Sinner,True,True
@@ -15,4 +15,4 @@ snapshot_date,match_id,round,player_a,player_b,p_player_a,p_player_b,predicted_w
 2026-07-03,R3_M12,R3,Zizou Bergs,Arthur Fery,0.5583062337717057,0.4416937662282942,Zizou Bergs,0.5583062337717057,XGBoost calibrated,Arthur Fery,True,False
 2026-07-03,R3_M16,R3,Marcos Giron,Alexander Zverev,0.4240912922360736,0.5759087077639263,Alexander Zverev,0.5759087077639263,XGBoost calibrated,Alexander Zverev,True,True
 2026-07-03,R3_M10,R3,Karen Khachanov,Flavio Cobolli,0.569345413211939,0.430654586788061,Karen Khachanov,0.569345413211939,XGBoost calibrated,Flavio Cobolli,True,False
-2026-07-03,R3_M15,R3,Jiri Lehecka,Juan Pablo Munar,0.7534202938325708,0.2465797061674292,Jiri Lehecka,0.7534202938325708,XGBoost calibrated,,False,False
+2026-07-03,R3_M15,R3,Jiri Lehecka,Juan Pablo Munar,0.7534202938325708,0.2465797061674292,Jiri Lehecka,0.7534202938325708,XGBoost calibrated,Jiri Lehecka,True,True

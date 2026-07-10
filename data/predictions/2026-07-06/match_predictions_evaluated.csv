@@ -1,5 +1,5 @@
 snapshot_date,match_id,round,player_a,player_b,p_player_a,p_player_b,predicted_winner,confidence,model,actual_winner,resolved,correct
-2026-07-06,R4_M2,R4,Hubert Hurkacz,Jan-Lennard Struff,0.6097466119943957,0.3902533880056043,Hubert Hurkacz,0.6097466119943957,XGBoost calibrated,,False,False
+2026-07-06,R4_M2,R4,Hubert Hurkacz,Jan-Lennard Struff,0.6097466119943957,0.3902533880056043,Hubert Hurkacz,0.6097466119943957,XGBoost calibrated,Jan-Lennard Struff,True,False
 2026-07-06,R4_M5,R4,Alex de Minaur,Flavio Cobolli,0.7077607151705987,0.2922392848294013,Alex de Minaur,0.7077607151705987,XGBoost calibrated,Flavio Cobolli,True,False
 2026-07-06,R4_M8,R4,Jiri Lehecka,Alexander Zverev,0.3063255322210024,0.6936744677789975,Alexander Zverev,0.6936744677789975,XGBoost calibrated,Alexander Zverev,True,True
 2026-07-06,R4_M6,R4,Grigor Dimitrov,Arthur Fery,0.6497457247938814,0.3502542752061186,Grigor Dimitrov,0.6497457247938814,XGBoost calibrated,Arthur Fery,True,False

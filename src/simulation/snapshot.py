@@ -24,8 +24,24 @@ _BRACKET_TO_DATA_ROUND = {
 }
 
 
+# Draw CSV vs match-data mismatches (wrong first names in draw source).
+_NAME_ALIASES: dict[str, str] = {
+    "kevin jacquet": "kyrian jacquet",
+    "juan pablo munar": "jaume munar",
+}
+
+
 def _normalize_name(name: str) -> str:
-    return " ".join(str(name).strip().lower().split())
+    normalized = " ".join(str(name).strip().lower().split())
+    return _NAME_ALIASES.get(normalized, normalized)
+
+
+# Results missing from the upstream TML data source but inferable from the
+# bracket (e.g. a player appears in the next round so they must have won).
+_MANUAL_RESULTS: list[tuple[str, str, str]] = [
+    # Struff appears in QF (lost to Sinner), so he beat Hurkacz in R16.
+    ("R16", "Jan-Lennard Struff", "Hubert Hurkacz"),
+]
 
 
 def _match_result_lookup(matches: pd.DataFrame) -> dict[tuple[str, str, str], str]:
@@ -43,6 +59,9 @@ def _match_result_lookup(matches: pd.DataFrame) -> dict[tuple[str, str, str], st
         loser = str(row["loser_name"])
         pair = tuple(sorted([_normalize_name(winner), _normalize_name(loser)]))
         lookup[(data_round, pair[0], pair[1])] = winner
+    for data_round, winner, loser in _MANUAL_RESULTS:
+        pair = tuple(sorted([_normalize_name(winner), _normalize_name(loser)]))
+        lookup.setdefault((data_round, pair[0], pair[1]), winner)
     return lookup
 
 

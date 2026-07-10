@@ -1,5 +1,5 @@
 snapshot_date,match_id,round,player_a,player_b,p_player_a,p_player_b,predicted_winner,confidence,model,actual_winner,resolved,correct
-2026-07-08,R4_M2,R4,Hubert Hurkacz,Jan-Lennard Struff,0.6270906806735154,0.3729093193264846,Hubert Hurkacz,0.6270906806735154,XGBoost calibrated,,False,False
+2026-07-08,R4_M2,R4,Hubert Hurkacz,Jan-Lennard Struff,0.6270906806735154,0.3729093193264846,Hubert Hurkacz,0.6270906806735154,XGBoost calibrated,Jan-Lennard Struff,True,False
 2026-07-08,QF_M3,QF,Flavio Cobolli,Arthur Fery,0.6614312105039312,0.3385687894960688,Flavio Cobolli,0.6614312105039312,XGBoost calibrated,Arthur Fery,True,False
 2026-07-08,QF_M4,QF,Taylor Fritz,Alexander Zverev,0.4142620286073563,0.5857379713926436,Alexander Zverev,0.5857379713926436,XGBoost calibrated,Alexander Zverev,True,True
 2026-07-08,SF_M1,SF,Jannik Sinner,Novak Djokovic,0.5352810652274955,0.4647189347725045,Jannik Sinner,0.5352810652274955,XGBoost calibrated,,False,False
