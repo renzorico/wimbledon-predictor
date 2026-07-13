@@ -1,0 +1,2 @@
+snapshot_date,match_id,round,player_a,player_b,p_player_a,p_player_b,predicted_winner,confidence,model,actual_winner,resolved,correct
+2026-07-13,R4_M2,R4,Hubert Hurkacz,Jan-Lennard Struff,0.6214282451724986,0.3785717548275014,Hubert Hurkacz,0.6214282451724986,XGBoost calibrated,Jan-Lennard Struff,True,False
