@@ -1,9 +1,9 @@
 name: Daily Wimbledon update
 
 on:
-  schedule:
-    # 00:30 London / 01:30 Madrid during Wimbledon summer time.
-    - cron: "30 23 * * *"
+  # Schedule disabled — Wimbledon 2026 is finished.
+  # schedule:
+  #   - cron: "30 23 * * *"
   workflow_dispatch:
     inputs:
       skip_train:
